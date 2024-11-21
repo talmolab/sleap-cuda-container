@@ -31,7 +31,8 @@ jobs:
       - name: Sanitize platform name
         id: sanitize_platform
         run: |
-          sanitized_platform=${{ matrix.platform//\//- }}
+          sanitized_platform="${{ matrix.platform }}" # Copy platform value
+          sanitized_platform="${sanitized_platform/\//-}" # Replace / with -
           echo "sanitized_platform=$sanitized_platform" >> $GITHUB_OUTPUT
 
       # Set up QEMU for cross-platform builds
