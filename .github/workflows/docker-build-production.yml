@@ -1,0 +1,87 @@
+name: Build and Push Multi-Arch Docker Image
+
+# Run on push to main branch
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest]
+        platform: [linux/arm64, linux/amd64]
+      max-parallel: 2
+    outputs:
+      git_sha: ${{ steps.git_info.outputs.sha }}
+    steps:
+      - name: Checkout code
+        # https://github.com/actions/checkout
+        uses: actions/checkout@v4
+
+      - name: Get Git SHA
+        id: git_info
+        run: echo "::set-output name=sha::$(git rev-parse HEAD)"
+
+      - name: Set up Docker Buildx
+        # https://github.com/docker/setup-buildx-action
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        # https://github.com/docker/login-action
+        uses: docker/login-action@v3
+        with:
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        # https://github.com/docker/build-push-action 
+        uses: docker/build-push-action@v6
+        with:
+          context: ./docker
+          file: ./docker/Dockerfile
+          platforms: ${{ matrix.platform }}
+          push: true
+          tags: |
+            ${{ vars.DOCKERHUB_USERNAME }}/sleap-cuda:${{ matrix.platform }}-latest
+            ${{ vars.DOCKERHUB_USERNAME }}/sleap-cuda:${{ matrix.platform }}-nvidia-cuda-11.3.1-cudnn8-runtime-ubuntu20.04
+            ${{ vars.DOCKERHUB_USERNAME }}/sleap-cuda:${{ matrix.platform }}-sleap-1.3.4
+            ${{ vars.DOCKERHUB_USERNAME }}/sleap-cuda:${{ matrix.platform }}-${{ steps.git_info.outputs.sha }}
+
+      - name: Clean up Docker resources
+        run: docker system prune -af
+
+  combine-manifest:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Log in to Docker Hub
+        # https://github.com/docker/login-action
+        uses: docker/login-action@v3
+        with:
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Create multi-arch manifest
+        run: |
+          docker manifest create ${{ vars.DOCKERHUB_USERNAME }}/sleap-cuda:latest \
+            ${{ vars.DOCKERHUB_USERNAME }}/sleap-cuda:linux/amd64-latest \
+            ${{ vars.DOCKERHUB_USERNAME }}/sleap-cuda:linux/arm64-latest
+          docker manifest push ${{ vars.DOCKERHUB_USERNAME }}/sleap-cuda:latest
+
+      - name: Push additional multi-arch tags
+        run: |
+          docker manifest create ${{ vars.DOCKERHUB_USERNAME }}/sleap-cuda:nvidia-cuda-11.3.1-cudnn8-runtime-ubuntu20.04 \
+            ${{ vars.DOCKERHUB_USERNAME }}/sleap-cuda:linux/amd64-latest \
+            ${{ vars.DOCKERHUB_USERNAME }}/sleap-cuda:linux/arm64-latest
+          docker manifest create ${{ vars.DOCKERHUB_USERNAME }}/sleap-cuda:sleap-1.3.4 \
+            ${{ vars.DOCKERHUB_USERNAME }}/sleap-cuda:linux/amd64-latest \
+            ${{ vars.DOCKERHUB_USERNAME }}/sleap-cuda:linux/arm64-latest
+          docker manifest create ${{ vars.DOCKERHUB_USERNAME }}/sleap-cuda:${{ needs.build.outputs.git_sha }} \
+            ${{ vars.DOCKERHUB_USERNAME }}/sleap-cuda:linux/amd64-latest \
+            ${{ vars.DOCKERHUB_USERNAME }}/sleap-cuda:linux/arm64-latest
+          docker manifest push ${{ vars.DOCKERHUB_USERNAME }}/sleap-cuda:nvidia-cuda-11.3.1-cudnn8-runtime-ubuntu20.04
+          docker manifest push ${{ vars.DOCKERHUB_USERNAME }}/sleap-cuda:sleap-1.3.4
+          docker manifest push ${{ vars.DOCKERHUB_USERNAME }}/sleap-cuda:${{ needs.build.outputs.git_sha }}
