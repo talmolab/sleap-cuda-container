@@ -23,7 +23,7 @@ jobs:
 
       - name: Get Git SHA
         id: git_info
-        run: echo "::set-output name=sha::$(git rev-parse HEAD)"
+        run: echo "sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
 
       - name: Set up Docker Buildx
         # https://github.com/docker/setup-buildx-action

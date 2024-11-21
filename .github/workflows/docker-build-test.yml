@@ -23,7 +23,7 @@ jobs:
 
       - name: Get Git SHA
         id: get_sha
-        run: echo "::set-output name=sha::$(git rev-parse HEAD)"
+        run: echo "sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
 
       - name: Debug Git SHA
         run: echo "Git SHA: ${{ steps.get_sha.outputs.sha }}"
