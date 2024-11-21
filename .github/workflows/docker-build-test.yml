@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        platform: [linux/arm64, linux/amd64] # Build for both architectures
+        platform: linux/amd64 # Only build amd64 for now
       max-parallel: 2  # Build both architectures in parallel
     outputs:
       git_sha: ${{ steps.get_sha.outputs.sha }}
