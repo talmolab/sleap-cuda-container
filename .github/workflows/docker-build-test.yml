@@ -27,6 +27,13 @@ jobs:
       - name: Debug Git SHA
         run: echo "Git SHA ${{ steps.get_sha.outputs.sha }}"
 
+      # Generate a sanitized platform string with slashes replaced by dashes
+      - name: Sanitize platform name
+        id: sanitize_platform
+        run: |
+          sanitized_platform=${{ matrix.platform//\//- }}
+          echo "sanitized_platform=$sanitized_platform" >> $GITHUB_OUTPUT
+
       # Set up QEMU for cross-platform builds
       - name: Set up QEMU
         # https://github.com/docker/setup-qemu-action
@@ -55,11 +62,12 @@ jobs:
           file: ./docker/Dockerfile # Path to Dockerfile
           platforms: ${{ matrix.platform }}
           push: true # Push the image to Docker Hub
+          # Tags all include "-test" to differentiate from production images
           tags: |
-            ${{ vars.DOCKERHUB_USERNAME }}/sleap-cuda:${{ matrix.platform }}-test
-            ${{ vars.DOCKERHUB_USERNAME }}/sleap-cuda:${{ matrix.platform }}-nvidia-cuda-11.3.1-cudnn8-runtime-ubuntu20.04-test
-            ${{ vars.DOCKERHUB_USERNAME }}/sleap-cuda:${{ matrix.platform }}-sleap-1.3.4-test
-            ${{ vars.DOCKERHUB_USERNAME }}/sleap-cuda:${{ matrix.platform }}-${{ steps.get_sha.outputs.sha }}-test
+            ${{ vars.DOCKERHUB_USERNAME }}/sleap-cuda:${{ steps.sanitize_platform.outputs.sanitized_platform }}-test
+            ${{ vars.DOCKERHUB_USERNAME }}/sleap-cuda:${{ steps.sanitize_platform.outputs.sanitized_platform }}-nvidia-cuda-11.3.1-cudnn8-runtime-ubuntu20.04-test
+            ${{ vars.DOCKERHUB_USERNAME }}/sleap-cuda:${{ steps.sanitize_platform.outputs.sanitized_platform }}-sleap-1.3.4-test
+            ${{ vars.DOCKERHUB_USERNAME }}/sleap-cuda:${{ steps.sanitize_platform.outputs.sanitized_platform }}-${{ steps.get_sha.outputs.sha }}-test
 
       - name: Clean up Docker resources
         run: docker system prune -af
@@ -79,24 +87,24 @@ jobs:
         run: |
           # Create a multi-arch manifest for the test tag
           docker manifest create ${{ vars.DOCKERHUB_USERNAME }}/sleap-cuda:test \
-            ${{ vars.DOCKERHUB_USERNAME }}/sleap-cuda:linux/amd64-test \
-            ${{ vars.DOCKERHUB_USERNAME }}/sleap-cuda:linux/arm64-test
+            ${{ vars.DOCKERHUB_USERNAME }}/sleap-cuda:linux-amd64-test \
+            ${{ vars.DOCKERHUB_USERNAME }}/sleap-cuda:linux-arm64-test
           docker manifest push ${{ vars.DOCKERHUB_USERNAME }}/sleap-cuda:test
 
       - name: Push additional multi-arch tags
         run: |
           # Multi-arch manifest for CUDA version
           docker manifest create ${{ vars.DOCKERHUB_USERNAME }}/sleap-cuda:nvidia-cuda-11.3.1-cudnn8-runtime-ubuntu20.04-test \
-            ${{ vars.DOCKERHUB_USERNAME }}/sleap-cuda:linux/amd64-test \
-            ${{ vars.DOCKERHUB_USERNAME }}/sleap-cuda:linux/arm64-test
+            ${{ vars.DOCKERHUB_USERNAME }}/sleap-cuda:linux-amd64-test \
+            ${{ vars.DOCKERHUB_USERNAME }}/sleap-cuda:linux-arm64-test
           # Multi-arch manifest for SLEAP version
           docker manifest create ${{ vars.DOCKERHUB_USERNAME }}/sleap-cuda:sleap-1.3.4-test \
-            ${{ vars.DOCKERHUB_USERNAME }}/sleap-cuda:linux/amd64-test \
-            ${{ vars.DOCKERHUB_USERNAME }}/sleap-cuda:linux/arm64-test
+            ${{ vars.DOCKERHUB_USERNAME }}/sleap-cuda:linux-amd64-test \
+            ${{ vars.DOCKERHUB_USERNAME }}/sleap-cuda:linux-arm64-test
           # Multi-arch manifest for Git SHA
           docker manifest create ${{ vars.DOCKERHUB_USERNAME }}/sleap-cuda:${{ needs.build.outputs.git_sha }}-test \
-            ${{ vars.DOCKERHUB_USERNAME }}/sleap-cuda:linux/amd64-test \
-            ${{ vars.DOCKERHUB_USERNAME }}/sleap-cuda:linux/arm64-test
+            ${{ vars.DOCKERHUB_USERNAME }}/sleap-cuda:linux-amd64-test \
+            ${{ vars.DOCKERHUB_USERNAME }}/sleap-cuda:linux-arm64-test
           docker manifest push ${{ vars.DOCKERHUB_USERNAME }}/sleap-cuda:nvidia-cuda-11.3.1-cudnn8-runtime-ubuntu20.04-test
           docker manifest push ${{ vars.DOCKERHUB_USERNAME }}/sleap-cuda:sleap-1.3.4-test
           docker manifest push ${{ vars.DOCKERHUB_USERNAME }}/sleap-cuda:${{ needs.build.outputs.git_sha }}-test
