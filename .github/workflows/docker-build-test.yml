@@ -8,10 +8,9 @@ on:
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest] # Use macOS for ARM64 and Ubuntu for AMD64
         platform: [linux/arm64, linux/amd64] # Build for both architectures
       max-parallel: 2  # Build both architectures in parallel
     outputs:
