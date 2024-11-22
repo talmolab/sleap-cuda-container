@@ -2,7 +2,7 @@
 
 
 ## Description
-This repo contains a DockerFile for a lightweight container (~2.79 GB) with the PyPI installation of SLEAP and all of its dependencies. The container repository is located at [https://hub.docker.com/repository/docker/eberrigan/sleap-cuda/general](https://hub.docker.com/repository/docker/eberrigan/sleap-cuda/general).
+This repo contains a DockerFile for a lightweight container (~2.79 GB) with the PyPI installation of SLEAP and all of its dependencies. The container repository is located at (https://hub.docker.com/repository/docker/eberrigan/sleap-cuda/general)[https://hub.docker.com/repository/docker/eberrigan/sleap-cuda/general].
 
 The base image used is [https://hub.docker.com/layers/nvidia/cuda/11.3.1-cudnn8-runtime-ubuntu20.04/images/sha256-025a321d3131b688f4ac09d80e9af6221f2d1568b4f9ea6e45a698beebb439c0](nvidia/cuda:11.3.1-cudnn8-runtime-ubuntu20.04).
 
