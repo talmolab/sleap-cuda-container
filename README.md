@@ -1,11 +1,10 @@
-# sleap-train
+# sleap-cuda-container
 
 
 ## Description
-This repo contains a DockerFile for a lightweight container (~2.79 GB) with the PyPI installation of SLEAP and all of its dependencies. The container repository is located at (https://hub.docker.com/repository/docker/eberrigan/sleap-cuda/general)[https://hub.docker.com/repository/docker/eberrigan/sleap-cuda/general].
+This repo contains a DockerFile for a lightweight container (~2.79 GB) with the PyPI installation of SLEAP and all of its dependencies. The container repository is located at [https://hub.docker.com/repository/docker/eberrigan/sleap-cuda/general](https://hub.docker.com/repository/docker/eberrigan/sleap-cuda/general).
 
-The base image used is [https://hub.docker.com/layers/nvidia/cuda/11.3.1-cudnn8-runtime-ubuntu20.04/images/sha256-025a321d3131b688f4ac09d80e9af6221f2d1568b4f9ea6e45a698beebb439c0](nvidia/cuda:11.3.1-cudnn8-runtime-ubuntu20.04).
-
+The base image used is [nvidia/cuda:11.3.1-cudnn8-runtime-ubuntu20.04](https://hub.docker.com/layers/nvidia/cuda/11.3.1-cudnn8-runtime-ubuntu20.04/images/sha256-025a321d3131b688f4ac09d80e9af6221f2d1568b4f9ea6e45a698beebb439c0).
 - The Dockerfile is located at `docker/Dockerfile`.
 - The repo has CI set up in `.github/workflows` for building and pushing the image when making changes.
   - The workflow uses the linux/amd64 platform to build. 
@@ -38,7 +37,7 @@ and test with
 python -c "import sleap; sleap.versions()" && nvidia-smi
 ```
 
-To run the image interactively with data mounted to the container, use the syntax
+In general, use the syntax
 
 ```
 docker run -v /path/on/host:/path/in/container [other options] image_name [command]
@@ -83,7 +82,9 @@ Test:
 
 
 ## Build
-To build and push via automated CI, just push changes to a branch. Pushes to `main` result in an image with the tag `latest`. Pushes to other branches have tags with `-test` appended. 
+To build and push via automated CI, just push changes to a branch. 
+- Pushes to `main` result in an image with the tag `latest`. 
+- Pushes to other branches have tags with `-test` appended. 
 - See `.github/workflows` for testing and production workflows.
 
 To build locally for testing you can use the command:
