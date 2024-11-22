@@ -87,6 +87,18 @@ To build and push via automated CI, just push changes to a branch.
 - Pushes to other branches have tags with `-test` appended. 
 - See `.github/workflows` for testing and production workflows.
 
+To test `test` images locally use after pushing the `test` images via CI:
+
+```
+docker pull eberrigan/sleap-cuda:linux-amd64-test
+```
+
+then 
+
+```
+docker run -v ./tests/data:/workspace/tests/data --gpus all -it eberrigan/sleap-cuda:linux-amd64-test bash
+```
+
 To build locally for testing you can use the command:
 
 ```
