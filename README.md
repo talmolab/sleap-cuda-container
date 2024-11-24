@@ -58,7 +58,9 @@ docker run -u $(id -u):$(id -g) -v ./tests/data:/workspace/tests/data --gpus all
 Test:
 
 ```
- python -c "import sleap; print('SLEAP version:', sleap.__version__)"
+ python3 -c "import sleap; print('SLEAP version:', sleap.__version__)"
+ nvidia-smi # Check that the GPUs are disvoerable
+ ps aux | grep Xtightvnc # Check that the VNC server is running
  sleap-train "tests/data/initial_config.json" "tests/data/dance.mp4.labels.slp" --video-paths "tests/data/dance.mp4"
 ```
 
