@@ -2,6 +2,12 @@
 # https://hub.docker.com/repository/docker/eberrigan/sleap-cuda/general
 FROM eberrigan/sleap-cuda:latest
 
+# Install required tools
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    tar \
+    && rm -rf /var/lib/apt/lists/*
+
 # Install VS Code CLI
 RUN curl -Lk 'https://code.visualstudio.com/sha/download?build=stable&os=cli-alpine-x64' --output vscode_cli.tar.gz && \
     tar -xf vscode_cli.tar.gz -C /usr/local/bin && \
