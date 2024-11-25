@@ -1,6 +1,16 @@
 # Base image with SLEAP and GPU support
 FROM eberrigan/sleap-cuda:latest
 
+# Install required tools for VNC server
+RUN apt-get update && apt-get install -y --no-install-recommends \    
+    xfce4 \
+    xfce4-goodies \
+    tightvncserver \
+    dbus-x11 \
+    xfonts-base \
+    autocutsel \
+    && rm -rf /var/lib/apt/lists/*
+
 # Setup VNC server
 RUN mkdir /root/.vnc && \
     echo "password" | vncpasswd -f > /root/.vnc/passwd && \
