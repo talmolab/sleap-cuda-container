@@ -7,6 +7,7 @@ on:
       - main
     paths:
       - sleap_cuda/** # Only run on changes to sleap_cuda
+      - .github/workflows/sleap_cuda_production.yml # Only run on changes to this workflow
 
 jobs:
   build:
