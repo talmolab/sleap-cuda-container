@@ -19,6 +19,9 @@ ENV PATH="/usr/local/bin:$PATH"
 # Set the working directory in the container
 WORKDIR /app
 
+# Copy the devcontainer configuration folder into the container
+COPY .devcontainer /app/.devcontainer
+
 # Add a script to run the VS Code tunnel
 # https://code.visualstudio.com/docs/remote/tunnels#_using-the-code-cli
 RUN echo "#!/bin/bash\n\n# Start VS Code tunnel\ncode tunnel --accept-server-license-terms" > /app/start-tunnel.sh && \
