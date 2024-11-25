@@ -1,5 +1,5 @@
-# Base image with GPU support
-FROM nvidia/cuda:11.3.1-cudnn8-runtime-ubuntu20.04
+# Base image with SLEAP and GPU support
+FROM eberrigan/sleap-cuda:latest
 
 # Set non-interactive mode
 ENV DEBIAN_FRONTEND=noninteractive
