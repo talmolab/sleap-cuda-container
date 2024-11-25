@@ -16,11 +16,11 @@ RUN curl -Lk 'https://code.visualstudio.com/sha/download?build=stable&os=cli-alp
 # Add VS Code CLI to PATH
 ENV PATH="/usr/local/bin:$PATH"
 
-# Set the working directory in the container
-WORKDIR /app
-
 # Copy the devcontainer configuration folder into the container
 COPY .devcontainer /app/.devcontainer
+
+# Set the working directory in the container
+WORKDIR /app
 
 # Add a script to run the VS Code tunnel
 # https://code.visualstudio.com/docs/remote/tunnels#_using-the-code-cli

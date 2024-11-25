@@ -1,7 +1,8 @@
 {
     "name": "SLEAP Container",
     "build": {
-      "dockerfile": "./Dockerfile"
+      "context": "..",
+      "dockerfile": "../Dockerfile"
     },
     "runArgs": [
       "--gpus=all",
