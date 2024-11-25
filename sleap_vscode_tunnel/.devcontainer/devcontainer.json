@@ -1,0 +1,22 @@
+{
+    "name": "SLEAP Container",
+    "build": {
+      "dockerfile": "./Dockerfile"
+    },
+    "runArgs": [
+      "--gpus=all",
+      "--shm-size=16g",
+      "-e", "DISPLAY=${env:DISPLAY}",
+      "-v", "/tmp/.X11-unix:/tmp/.X11-unix"
+    ],
+    "customizations": {
+      "vscode": {
+        "settings": {
+          "terminal.integrated.defaultProfile.linux": "bash"
+        }
+      }
+    },
+    "postCreateCommand": "echo 'Devcontainer ready for use!'",
+    "remoteUser": "root"
+  }
+  
