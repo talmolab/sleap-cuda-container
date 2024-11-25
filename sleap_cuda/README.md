@@ -1,4 +1,4 @@
-# sleap-cuda-container
+# sleap-cuda
 
 
 ## Description

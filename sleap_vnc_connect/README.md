@@ -1,8 +1,9 @@
-# sleap-cuda-container
+# sleap-vnc-connect
 
+The SLEAP GUI will not open in the VNC server and I do not know why! VNC connection works.
 
 ## Description
-This repo contains a DockerFile for a lightweight container (~2.79 GB) with the PyPI installation of SLEAP and all of its dependencies. The container repository is located at [https://hub.docker.com/repository/docker/eberrigan/sleap-cuda/general](https://hub.docker.com/repository/docker/eberrigan/sleap-cuda/general).
+This repo contains a DockerFile for a lightweight container (~2.79 GB) with the PyPI installation of SLEAP and all of its dependencies. The container repository is located at [https://hub.docker.com/repository/docker/eberrigan/sleap-vnc-connect/general](https://hub.docker.com/repository/docker/eberrigan/sleap-vnc-connect/general).
 
 The base image used is [nvidia/cuda:11.3.1-cudnn8-runtime-ubuntu20.04](https://hub.docker.com/layers/nvidia/cuda/11.3.1-cudnn8-runtime-ubuntu20.04/images/sha256-025a321d3131b688f4ac09d80e9af6221f2d1568b4f9ea6e45a698beebb439c0).
 - The Dockerfile is located at `docker/Dockerfile`.
@@ -20,7 +21,7 @@ The base image used is [nvidia/cuda:11.3.1-cudnn8-runtime-ubuntu20.04](https://h
 You can pull the image if you don't have it built locally, or need to update the latest, with
 
 ```
-docker pull eberrigan/sleap-cuda:latest
+docker pull eberrigan/sleap-vnc-connect:latest
 ```
 
 ## Usage 
@@ -28,7 +29,7 @@ docker pull eberrigan/sleap-cuda:latest
 Then, to run the image with gpus interactively:
 
 ```
-docker run --gpus all -it eberrigan/sleap-cuda:latest bash
+docker run --gpus all -it eberrigan/sleap-vnc-connect:latest bash
 ```
 
 and test with 
@@ -52,7 +53,7 @@ docker run -u $(id -u):$(id -g) -v /your/host/directory:/container/directory [op
 ```
 
 ```
-docker run -u $(id -u):$(id -g) -v ./tests/data:/workspace/tests/data --gpus all -it eberrigan/sleap-cuda:latest bash
+docker run -u $(id -u):$(id -g) -v ./tests/data:/workspace/tests/data --gpus all -it eberrigan/sleap-vnc-connect:latest bash
 ```
 
 Test:
@@ -66,7 +67,7 @@ Test:
 
 **Notes:**
 
-- The `eberrigan/sleap-cuda` is the Docker registry where the images are pulled from. This is only used when pulling images from the cloud, and not necesary when building/running locally.
+- The `eberrigan/sleap-vnc-connect` is the Docker registry where the images are pulled from. This is only used when pulling images from the cloud, and not necesary when building/running locally.
 - `-it` ensures that you get an interactive terminal. The `i` stands for interactive, and `t` allocates a pseudo-TTY, which is what allows you to interact with the bash shell inside the container.
 - The `-v` or `--volume` option mounts the specified directory with the same level of access as the directory has on the host.
 - `bash` is the command that gets executed inside the container, which in this case is to start the bash shell.
@@ -92,13 +93,13 @@ To build and push via automated CI, just push changes to a branch.
 To test `test` images locally use after pushing the `test` images via CI:
 
 ```
-docker pull eberrigan/sleap-cuda:linux-amd64-test
+docker pull eberrigan/sleap-vnc-connect:linux-amd64-test
 ```
 
 then 
 
 ```
-docker run -v ./tests/data:/workspace/tests/data --gpus all -it eberrigan/sleap-cuda:linux-amd64-test bash
+docker run -v ./tests/data:/workspace/tests/data --gpus all -it eberrigan/sleap-vnc-connect:linux-amd64-test bash
 ```
 
 To build locally for testing you can use the command:
