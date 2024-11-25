@@ -56,8 +56,8 @@ jobs:
         # https://github.com/docker/build-push-action
         uses: docker/build-push-action@v6
         with:
-          context: ./sleap_vscode_tunnel # Build context wrt the root of the repository
-          file: ./sleap_vscode_tunnel/Dockerfile # Path to Dockerfile wrt the root of the repository
+          context: ./sleap_vscode_tunnel/.devcontainer # Build context wrt the root of the repository
+          file: ./sleap_vscode_tunnel/.devcontainer/Dockerfile # Path to Dockerfile wrt the root of the repository
           platforms: ${{ matrix.platform }}
           push: true # Push the image to Docker Hub
           # Tags all include "-test" to differentiate from production images
