@@ -20,7 +20,7 @@ ENV PATH="/usr/local/bin:$PATH"
 ENV DISPLAY=127.0.0.1:0
 
 # Need these files to connect to the X11 server on the host
-COPY /tmp/.X11-unix /tmp/.X11-unix
+# COPY /tmp/.X11-unix /tmp/.X11-unix
 
 # Copy the devcontainer configuration folder into the container
 # COPY .devcontainer /app/.devcontainer
