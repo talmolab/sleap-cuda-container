@@ -1,0 +1,14 @@
+{
+    "name": "SLEAP VNC Container",
+    "build": {
+      "context": "..",
+      "dockerfile": "../Dockerfile"
+    },
+    "runArgs": [
+      "--gpus=all"
+    ],
+
+    "postCreateCommand": "echo 'Devcontainer ready for use!'",
+    "remoteUser": "root"
+  }
+  
