@@ -181,8 +181,8 @@ The ports can be forwarded to a localhost when running the container on RunAI us
 
 ```
 # Connecting to container on RunAI
-runai describe job sleap-vnc-connect-test-02-ws
-runai port-forward sleap-vnc-connect-test-02-ws --port 5901:5901
+runai describe job <job-name>
+runai port-forward <job-name> --port 5901:5901
 ```
 
 ## Contributing
