@@ -16,15 +16,6 @@ RUN curl -Lk 'https://code.visualstudio.com/sha/download?build=stable&os=cli-alp
 # Add VS Code CLI to PATH
 ENV PATH="/usr/local/bin:$PATH"
 
-# Set Display environment variable assuming X11 is running on the host
-ENV DISPLAY=127.0.0.1:0
-
-# Need these files to connect to the X11 server on the host
-# COPY /tmp/.X11-unix /tmp/.X11-unix
-
-# Copy the devcontainer configuration folder into the container
-# COPY .devcontainer /app/.devcontainer
-
 # Set the working directory in the container
 WORKDIR /app
 
