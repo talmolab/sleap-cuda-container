@@ -1,8 +1,10 @@
 # sleap-cuda
 
+This works well to develop in VS Code remotely with SLEAP installed and use the CLI. Unfortunately, port forwarding only works to expose locally-running service so that the GUI cannot be opened on the remote machine. 
+[How do I forward local services if I'm connected to a remote machine?](https://code.visualstudio.com/docs/editor/port-forwarding#_how-do-i-forward-local-services-if-im-connected-to-a-remote-machine)
 
 ## Description
-This repo contains a DockerFile for a lightweight container (~2.79 GB) with the PyPI installation of SLEAP and all of its dependencies. The container repository is located at [https://hub.docker.com/repository/docker/eberrigan/sleap-cuda/general](https://hub.docker.com/repository/docker/eberrigan/sleap-cuda/general).
+This repo contains a DockerFile for a lightweight container (~2.79 GB) with the PyPI installation of SLEAP and all of its dependencies. The container repository is located at [https://hub.docker.com/repository/docker/eberrigan/sleap-vscode-tunnel/general](https://hub.docker.com/repository/docker/eberrigan/sleap-vscode-tunnel/general).
 
 The base image used is [nvidia/cuda:11.3.1-cudnn8-runtime-ubuntu20.04](https://hub.docker.com/layers/nvidia/cuda/11.3.1-cudnn8-runtime-ubuntu20.04/images/sha256-025a321d3131b688f4ac09d80e9af6221f2d1568b4f9ea6e45a698beebb439c0).
 - The Dockerfile is located at `docker/Dockerfile`.

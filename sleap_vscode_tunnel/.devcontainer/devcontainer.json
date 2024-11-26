@@ -5,10 +5,7 @@
       "dockerfile": "../Dockerfile"
     },
     "runArgs": [
-      "--gpus=all",
-      "--shm-size=16g",
-      "-e", "DISPLAY=${env:DISPLAY}",
-      "-v", "/tmp/.X11-unix:/tmp/.X11-unix"
+      "--gpus=all"
     ],
     "customizations": {
       "vscode": {
