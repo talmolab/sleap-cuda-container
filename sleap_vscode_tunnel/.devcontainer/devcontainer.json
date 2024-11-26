@@ -1,5 +1,5 @@
 {
-    "name": "SLEAP Container",
+    "name": "SLEAP VSCode Remote Tunnel Container",
     "build": {
       "context": "..",
       "dockerfile": "../Dockerfile"

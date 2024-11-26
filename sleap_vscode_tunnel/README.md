@@ -11,7 +11,6 @@ The base image used is [nvidia/cuda:11.3.1-cudnn8-runtime-ubuntu20.04](https://h
 - The repo has CI set up in `.github/workflows` for building and pushing the image when making changes.
   - The workflow uses the linux/amd64 platform to build. 
 - `.devcontainer/devcontainer.json` is convenient for developing inside a container made with the DockerFile using Visual Studio Code.
-- Test data for training is located in `tests/data`.
 
 
 ## Installation
@@ -73,6 +72,16 @@ Test:
 - `bash` is the command that gets executed inside the container, which in this case is to start the bash shell.
 - Order of operations is 1. Pull (if needed): Get a pre-built image from a registry. 2. Run: Start a container from an image.
 
+## Connect to Remote Container with VS Code Remote Tunnel
+
+Documentation for VS Code Remote Tunnels is [here](https://code.visualstudio.com/docs/remote/tunnels).
+
+1. Run the container on your remote machine.
+  - The tunnel will be started in the container.
+2. Check the logs of your running container for directions to authenticate using Github.
+  - Should see something like `To grant access to the server, please log into https://github.com/login/device and use code 2346-530B`.
+3. Once authenticated, the logs should say `Creating tunnel with the name: <tunnel_name>`. You can connect to the container using the web address, where the web version of VS Code will be displayed in your containers environment, or using VS [Remote Tunnels Extension](https://code.visualstudio.com/docs/remote/tunnels#_remote-tunnels-extension) for VS Code. Install the VS Code extension or your local machine.
+
 ## Contributing
 
 - Use the `devcontainer.json` to open the repo in a dev container using VS Code.
@@ -102,10 +111,10 @@ then
 docker run -v ./tests/data:/tests/data --gpus all -it eberrigan/sleap-cuda:linux-amd64-test bash
 ```
 
-To build locally for testing you can use the command (from the root of the repo):
+To build locally for testing you can use the command:
 
 ```
-docker build --platform linux/amd64 ./sleap_cuda
+docker build --platform linux/amd64 .
 ```
 
 ## Support
