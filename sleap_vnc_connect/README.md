@@ -61,7 +61,7 @@ Test:
 
 ```
  python3 -c "import sleap; print('SLEAP version:', sleap.__version__)"
- nvidia-smi # Check that the GPUs are disvoerable
+ nvidia-smi # Check that the GPUs are discoverable
  ps aux | grep Xtightvnc # Check that the VNC server is running
  echo $DISPLAY # Check display environment variable is :1
  sleap-train "tests/data/initial_config.json" "tests/data/dance.mp4.labels.slp" --video-paths "tests/data/dance.mp4"
@@ -73,7 +73,8 @@ Test:
 - `-it` ensures that you get an interactive terminal. The `i` stands for interactive, and `t` allocates a pseudo-TTY, which is what allows you to interact with the bash shell inside the container.
 - The `-v` or `--volume` option mounts the specified directory with the same level of access as the directory has on the host.
 - `bash` is the command that gets executed inside the container, which in this case is to start the bash shell.
-- `p` The -p 5901:5901 flag in a Docker run command maps a port on the host machine to a port inside the container. 
+- The `--rm` flag in a docker run command automatically removes the container when it stops. This is useful for running temporary or one-time containers without cluttering your Docker environment with stopped containers.
+- The `-p 5901:5901` flag in a Docker run command maps a port on the host machine to a port inside the container. 
 
 ```
 -p [host-port]:[container-port]
@@ -84,6 +85,105 @@ Test:
 In this case, 5901 is mapped both inside and outside the container.
 
 - Order of operations is 1. Pull (if needed): Get a pre-built image from a registry. 2. Run: Start a container from an image.
+
+## Connect from a VNC Client
+
+Here's how you can structure the **README** to explain connecting to the VNC server inside the container:
+
+---
+
+# Connecting to the VNC Server in the SLEAP Container
+
+This guide explains how to connect to the VNC server running inside the SLEAP container to access the graphical user interface (GUI).
+
+## Prerequisites
+
+1. **VNC Viewer**: Install a VNC viewer such as [TigerVNC](https://tigervnc.org/), [RealVNC](https://www.realvnc.com/), or [TightVNC](https://www.tightvnc.com/).
+2. **Docker Setup**:
+   - Ensure Docker is installed and running on your system.
+   - The container is started with the `-p 5901:5901` port mapping.
+
+---
+
+## Steps to Connect to the VNC Server
+
+### 1. Start the Container
+
+Start the container with the necessary port mapping to expose the VNC server on port `5901`:
+
+```bash
+docker run -it --rm \
+  -p 5901:5901 \
+  --gpus=all \
+  your-container-name
+```
+
+> **Note:** If you're using a Dev Container setup, the port mapping is already included in the configuration.
+
+---
+
+### 2. Find the Host Machine's IP Address
+
+- If you are running the container locally:
+  - Use `localhost` or `127.0.0.1` to connect to the VNC server.
+
+- If the container is running on a remote machine:
+  - Find the machine's public or internal IP address.
+  - Use the following command on the remote machine:
+    ```bash
+    hostname -I
+    ```
+  - Note the first IP address listed.
+
+---
+
+### 3. Open the VNC Viewer
+
+1. Launch your VNC Viewer application.
+2. Enter the following connection address:
+   ```
+   <IP_ADDRESS>:5901
+   ```
+   Replace `<IP_ADDRESS>` with:
+   - `127.0.0.1` if running locally.
+   - The remote machine's IP address if connecting remotely.
+
+3. When prompted, enter the VNC password. This is configured inside the container.
+
+---
+
+### 4. Access the GUI
+
+Once connected, you'll see the desktop environment configured in the container (e.g., XFCE). You can now open and use GUI-based applications such as `sleap-label`.
+
+---
+
+## Troubleshooting
+
+1. **Cannot Connect to VNC Server**:
+   - Ensure the container is running and the `5901` port is correctly mapped.
+   - Verify the IP address is correct and reachable.
+   - Check that the VNC server inside the container is running.
+
+2. **Black Screen**:
+   - Ensure the desktop environment (e.g., XFCE) is correctly installed and configured.
+
+3. **Firewall Issues**:
+   - Ensure port `5901` is not blocked by a firewall (especially on remote setups).
+
+---
+
+Would you like further customization or additions to this README?
+
+**Run.AI GPU Cluster**
+
+The ports can be forwarded to a localhost when running the container on RunAI using this documentation [walkthrough-build-ports](https://docs.run.ai/v2.19/Researcher/Walkthroughs/walkthrough-build-ports/).
+
+```
+# Connecting to container on RunAI
+runai describe job sleap-vnc-connect-test-02-ws
+runai port-forward sleap-vnc-connect-test-02-ws --port 5901:5901
+```
 
 ## Contributing
 
