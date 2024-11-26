@@ -1,4 +1,5 @@
 # Base image with SLEAP and GPU support
+# https://hub.docker.com/repository/docker/eberrigan/sleap-cuda/general
 FROM eberrigan/sleap-cuda:latest
 
 # Install required tools for VNC server
