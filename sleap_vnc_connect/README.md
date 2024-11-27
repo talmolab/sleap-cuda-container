@@ -6,7 +6,7 @@ The SLEAP GUI will not open in the VNC server and I do not know why! VNC connect
 This repo contains a DockerFile for a lightweight container (~2.79 GB) with the PyPI installation of SLEAP and all of its dependencies and a VNC server. The VNC server can be connected to using port 5901. 
 The container repository is located at [https://hub.docker.com/repository/docker/eberrigan/sleap-vnc-connect/general](https://hub.docker.com/repository/docker/eberrigan/sleap-vnc-connect/general). 
 
-The base image used is [nvidia/cuda:11.3.1-cudnn8-runtime-ubuntu20.04](https://hub.docker.com/layers/nvidia/cuda/11.3.1-cudnn8-runtime-ubuntu20.04/images/sha256-025a321d3131b688f4ac09d80e9af6221f2d1568b4f9ea6e45a698beebb439c0).
+The base image used is [eberrigan/sleap-cuda:latest](https://hub.docker.com/layers/eberrigan/sleap-cuda/latest/images/sha256-9cc93c86cc60d0f8e357bf58c2901d9b29a509c70ae16ed90ea56ac6d33418e7?context=repo).
 - The Dockerfile is located at `docker/Dockerfile`.
 - The repo has CI set up in `.github/workflows` for building and pushing the image when making changes.
   - The workflow uses the linux/amd64 platform to build. 
