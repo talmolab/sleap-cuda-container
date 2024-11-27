@@ -41,6 +41,8 @@ RUN  curl https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /
 
 RUN echo "exec /etc/X11/Xsession /usr/bin/xfce4-session" > /etc/chrome-remote-desktop-session
 
+RUN systemctl disable lightdm.service
+
 # Create the user hep003
 RUN useradd -m -s /bin/bash hep003 && echo "hep003:password" | chpasswd && \
     echo "hep003 ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/hep003 && \
