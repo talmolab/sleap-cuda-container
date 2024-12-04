@@ -5,7 +5,6 @@ FROM eberrigan/sleap-cuda:latest
 # Install necessary packages for Chrome Remote Desktop
 # psmisc and python3-psutil and python3-packaging and python3-xdg and libutempter0 for GCRD to work
 RUN apt-get update && apt-get install -y \
-    wget \
     curl \
     gcc-10-base \
     libgcc-s1 \
@@ -22,7 +21,6 @@ RUN apt-get update && apt-get install -y \
     python3-xdg \ 
     libutempter0 \
     gnupg2 \
-    sudo \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 ENV DEBIAN_FRONTEND=noninteractive
