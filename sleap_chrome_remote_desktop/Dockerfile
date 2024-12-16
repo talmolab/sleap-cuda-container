@@ -21,6 +21,7 @@ RUN apt-get update && apt-get install -y \
     python3-xdg \ 
     libutempter0 \
     gnupg2 \
+    sudo \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 ENV DEBIAN_FRONTEND=noninteractive
