@@ -57,3 +57,6 @@ RUN chmod -R a+w /usr/local/lib/python3.8/dist-packages
 # Set up Chrome Remote Desktop for the user
 USER ${USERNAME}
 WORKDIR /home/${USERNAME}
+
+# Entrypoint
+ENTRYPOINT [ "/bin/bash" ]
