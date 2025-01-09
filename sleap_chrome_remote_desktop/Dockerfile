@@ -2,6 +2,8 @@
 # https://hub.docker.com/repository/docker/eberrigan/sleap-cuda/general
 FROM eberrigan/sleap-cuda:latest
 
+ARG USERNAME="hep003"
+
 # Install necessary packages for Chrome Remote Desktop
 # psmisc and python3-psutil and python3-packaging and python3-xdg and libutempter0 for GCRD to work
 RUN apt-get update && apt-get install -y \
@@ -26,10 +28,7 @@ RUN apt-get update && apt-get install -y \
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install Google Chrome Remote Desktop
-# RUN wget https://dl.google.com/linux/direct/chrome-remote-desktop_current_amd64.deb
-# RUN dpkg --install chrome-remote-desktop_current_amd64.deb
-
+# Install Chrome Remote Desktop
 RUN  curl https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /etc/apt/trusted.gpg.d/chrome-remote-desktop.gpg && \
     # Add the Chrome Remote Desktop repository
     echo "deb [arch=amd64] https://dl.google.com/linux/chrome-remote-desktop/deb stable main" > /etc/apt/sources.list.d/chrome-remote-desktop.list && \
@@ -42,15 +41,15 @@ RUN echo "exec /etc/X11/Xsession /usr/bin/xfce4-session" > /etc/chrome-remote-de
 
 RUN systemctl disable lightdm.service
 
-# Create the user hep003
-RUN useradd -m -s /bin/bash hep003 && echo "hep003:password" | chpasswd && \
-    echo "hep003 ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/hep003 && \
-    chmod 0440 /etc/sudoers.d/hep003 && \
-    chown -R hep003:hep003 /home/hep003
+# Create the user USERNAME
+RUN useradd -m -s /bin/bash ${USERNAME} && echo "${USERNAME}:password" | chpasswd && \
+    echo "${USERNAME} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/${USERNAME} && \
+    chmod 0440 /etc/sudoers.d/${USERNAME} && \
+    chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}
 
-# Add hep003 to the chrome-remote-desktop group
-RUN usermod -aG chrome-remote-desktop hep003
+# Add USERNAME to the chrome-remote-desktop group
+RUN usermod -aG chrome-remote-desktop ${USERNAME}
 
 # Set up Chrome Remote Desktop for the user
-USER hep003
-WORKDIR /home/hep003
+USER ${USERNAME}
+WORKDIR /home/${USERNAME}
