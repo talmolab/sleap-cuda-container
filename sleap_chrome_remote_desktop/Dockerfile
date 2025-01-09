@@ -2,7 +2,8 @@
 # https://hub.docker.com/repository/docker/eberrigan/sleap-cuda/general
 FROM eberrigan/sleap-cuda:latest
 
-ARG USERNAME="hep003"
+ARG USERNAME="tutorial"
+ENV DEBIAN_FRONTEND=noninteractive
 
 # Install necessary packages for Chrome Remote Desktop
 # psmisc and python3-psutil and python3-packaging and python3-xdg and libutempter0 for GCRD to work
@@ -25,8 +26,6 @@ RUN apt-get update && apt-get install -y \
     gnupg2 \
     sudo \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
-
-ENV DEBIAN_FRONTEND=noninteractive
 
 # Install Chrome Remote Desktop
 RUN  curl https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /etc/apt/trusted.gpg.d/chrome-remote-desktop.gpg && \
