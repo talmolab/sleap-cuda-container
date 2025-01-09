@@ -93,7 +93,10 @@ Once connected, you'll see the desktop environment configured in the container. 
 ## Troubleshooting
 
 1. **Cannot Access GUI with User due to Permission Errors:**
-   - Change the user to `root` in the Dockerfile to avoid permission issues.
+   - Change the user to `root` in the Dockerfile to avoid permission issues with command: 
+```bash
+  sudo su
+```
 
 ## Support
 contact Elizabeth at eberrigan@salk.edu
