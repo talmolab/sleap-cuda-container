@@ -15,6 +15,14 @@ The base image used is [eberrigan/sleap-cuda:latest](https://hub.docker.com/laye
 
 ## Usage
 
+**Notes:**
+
+- `-it` ensures that you get an interactive terminal. The `i` stands for interactive, and `t` allocates a pseudo-TTY, which is what allows you to interact with the bash shell inside the container.
+- The `-v` or `--volume` option mounts the specified directory with the same level of access as the directory has on the host.
+- `bash` is the command that gets executed inside the container, which in this case is to start the bash shell.
+- The `--rm` flag in a docker run command automatically removes the container when it stops. This is useful for running temporary or one-time containers without cluttering your Docker environment with stopped containers.
+- The `-p 5901:5901` flag in a Docker run command maps a port on the host machine to a port inside the container.
+
 To build the image locally, run
 
 ```
@@ -46,7 +54,7 @@ This guide explains how to connect to the Chrome Remote Desktop server running i
 Start the Docker container with the Chrome Remote Desktop server running in it.
 
 ```bash
-docker run --rm -it -p 5901:5901 --gpu=all <your-container-name>
+docker run --rm -it -p 5901:5901 --gpus=all <your-container-name>
 ```
 
 ### 2. Connect to the Chrome Remote Desktop
@@ -81,6 +89,11 @@ docker run --rm -it -p 5901:5901 --gpu=all <your-container-name>
 ### 4. Access the GUI
 
 Once connected, you'll see the desktop environment configured in the container. You can now open and use GUI-based applications such as `sleap-label`.
+
+## Troubleshooting
+
+1. **Cannot Access GUI with User due to Permission Errors:**
+   - Change the user to `root` in the Dockerfile to avoid permission issues.
 
 ## Support
 contact Elizabeth at eberrigan@salk.edu
