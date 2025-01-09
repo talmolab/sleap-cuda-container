@@ -2,6 +2,8 @@
 # https://hub.docker.com/repository/docker/eberrigan/sleap-cuda/general
 FROM eberrigan/sleap-cuda:latest
 
+# https://askubuntu.com/questions/1402167/must-specify-the-user-name-option-when-running-as-root-chrome-remote-desktop
+# Must be a non-root user to run Chrome Remote Desktop
 ARG USERNAME="tutorial"
 ENV DEBIAN_FRONTEND=noninteractive
 
