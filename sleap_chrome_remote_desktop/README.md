@@ -103,10 +103,12 @@ Once connected, you'll see the desktop environment configured in the container. 
 ## Troubleshooting
 
 1. **Cannot Access GUI with User due to Permission Errors:**
-   - Change the user to `root` in the Dockerfile to avoid permission issues with command: 
-```bash
-  sudo su
-```
+   - Added the following command to the Dockerfile to fix the issue:
+     ```
+     RUN chmod -R a+w /usr/local/lib/python3.8/dist-packages
+     ```
+    - This command changes the permissions of the specified directory to allow all users to read, write, and execute files in the directory.
+    - This might be vulnerable to security risks, so it is recommended to use it only for development purposes.
 
 ## Support
 contact Elizabeth at eberrigan@salk.edu
