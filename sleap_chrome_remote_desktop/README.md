@@ -13,7 +13,18 @@ The base image used is [eberrigan/sleap-cuda:latest](https://hub.docker.com/laye
 
 ## Installation
 
+**Make sure to have Docker Daemon running first**
+
+
+You can pull the image if you don't have it built locally, or need to update the latest, with
+
+```bash
+docker pull eberrigan/sleap-chrome-remote-desktop:latest
+```
+
 ## Usage
+
+<!-- TODO: Update after publishing the image -->
 
 **Notes:**
 
@@ -21,7 +32,7 @@ The base image used is [eberrigan/sleap-cuda:latest](https://hub.docker.com/laye
 - The `-v` or `--volume` option mounts the specified directory with the same level of access as the directory has on the host.
 - `bash` is the command that gets executed inside the container, which in this case is to start the bash shell.
 - The `--rm` flag in a docker run command automatically removes the container when it stops. This is useful for running temporary or one-time containers without cluttering your Docker environment with stopped containers.
-- The `-p 5901:5901` flag in a Docker run command maps a port on the host machine to a port inside the container.
+- The `--built-args` is used to pass build-time variables to the Dockerfile. In this case, the `USERNAME` variable is set to `tutorial` as default but able to be changed when building the image.
 
 To build the image locally, run
 
@@ -32,7 +43,7 @@ docker build -t sleap-chrome-remote-desktop .
 Then, to run the image with gpus interactively and mapping port 5901, which is exposed in the container, to port 5901 on a VNC client
 
 ```
-docker run --rm -it -p 5901:5901 --gpu=all sleap-chrome-remote-desktop
+docker run --rm -it --gpu=all sleap-chrome-remote-desktop
 ```
 
 # Connecting to the Chrome Remote Desktop
@@ -45,7 +56,6 @@ This guide explains how to connect to the Chrome Remote Desktop server running i
 2. **Chrome Browser**: You need to have the Chrome browser installed on your local machine.
 3. **Docker Setup**: 
    - Ensure Docker is installed on your local machine.
-   - The container is started with `-p 5901:5901` port mapping.
 
 ## Steps to Connect to the Chrome Remote Desktop
 
@@ -54,7 +64,7 @@ This guide explains how to connect to the Chrome Remote Desktop server running i
 Start the Docker container with the Chrome Remote Desktop server running in it.
 
 ```bash
-docker run --rm -it -p 5901:5901 --gpus=all <your-container-name>
+docker run --rm -it --gpus=all <your-container-name> bash
 ```
 
 ### 2. Connect to the Chrome Remote Desktop
@@ -82,7 +92,7 @@ docker run --rm -it -p 5901:5901 --gpus=all <your-container-name>
 
 2. Sign in with your Google account.
 
-3. Then, click "Remote Access" to check the status of your remote desktop.
+3. Then, click "Remote Access" to check the status of your remote desktop (make sure to refresh the page).
 
 4. If you see the status as "Online", click on the remote desktop to connect and enter the 6-digit PIN you set earlier.
 
