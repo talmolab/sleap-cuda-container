@@ -51,6 +51,9 @@ RUN useradd -m -s /bin/bash ${USERNAME} && echo "${USERNAME}:password" | chpassw
 # Add USERNAME to the chrome-remote-desktop group
 RUN usermod -aG chrome-remote-desktop ${USERNAME}
 
+# Relax permissions on Python site-packages
+RUN chmod -R a+w /usr/local/lib/python3.8/dist-packages
+
 # Set up Chrome Remote Desktop for the user
 USER ${USERNAME}
 WORKDIR /home/${USERNAME}
