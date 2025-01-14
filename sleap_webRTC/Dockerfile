@@ -8,8 +8,24 @@ FROM eberrigan/sleap-cuda:latest
 # RUN apt-get update && apt-get install -y --no-install-recommends \
 #     apt-get clean && \
 #     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* 
+
+# Goal: Connect to Remote Signaling Server w/ aiortc and websockets
   
-RUN pip install asyncio 
+# Install websocket dependencies onto image @ build time (asyncio is included in python3.8)
+RUN pip install aiortc asyncio websockets
+
+# Copy the sleap_webRTC directory into the image's root dir
+COPY . .
+
+# Port exposed by the container NOT computer (localhost)
+EXPOSE 8080
+
+# Signaling server -> worker -> client in sequenece
+# Worker makes req to signaling server, signaling server sends offer to client and accepts offer
+# Connection is established between client and worker
+CMD ["sh", "-c", "python3 sleap_webRTC/server.py && python3 sleap_webRTC/worker.py && python3 sleap_webRTC/client.py"]
+
+
 
 
   
