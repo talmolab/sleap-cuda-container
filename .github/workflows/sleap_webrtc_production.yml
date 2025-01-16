@@ -1,4 +1,4 @@
-name: Build and Push sleap-vscode-tunnel (Production Workflow)
+name: Build and Push sleap-webrtc (Production Workflow)
 
 # Run on push to main branch after testing is complete
 on:

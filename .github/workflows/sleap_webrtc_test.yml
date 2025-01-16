@@ -1,4 +1,4 @@
-name: Build and Push sleap-vscode-tunnel (Test Workflow)
+name: Build and Push sleap-webrtc (Test Workflow)
 
 # Run on push to branches other than main for sleap_vscode_tunnel
 on:
