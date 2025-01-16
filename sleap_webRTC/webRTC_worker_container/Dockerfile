@@ -15,7 +15,7 @@ FROM eberrigan/sleap-cuda:latest
 RUN pip install aiortc asyncio websockets
 
 # Copy the sleap_webRTC directory into the image's root dir
-COPY . .
+COPY . worker.py
 
 # Port exposed by the container, NOT computer (localhost)
 EXPOSE 8080
@@ -23,8 +23,7 @@ EXPOSE 8080
 # Signaling server -> worker -> client in sequenece
 # Worker makes req to signaling server, signaling server sends offer to client and accepts offer
 # Connection is established between client and worker
-CMD ["sh", "-c", "python3 sleap_webRTC/server.py && python3 sleap_webRTC/worker.py && python3 sleap_webRTC/client.py"]
-
+CMD ["sh", "-c", "python3 sleap_webRTC/worker.py"]
 
 
 
