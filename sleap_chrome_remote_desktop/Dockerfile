@@ -24,22 +24,22 @@ RUN apt-get update && apt-get install -y \
     xvfb \
     # Python packages required by Chrome Remote Desktop
     # Handles versioning and dependency management for Python packages
-    python3-packaging \   
-    python3-psutil \     
+    python3-packaging \
     # Provides system utilization and process management utilities
-    python3-xdg \        
+    python3-psutil \
     # Handles X Desktop Group file format support
+    python3-xdg \
     # Miscellaneous dependencies
-    psmisc \             
     # Provides process management utilities
-    xserver-xorg-video-dummy \  
+    psmisc \
     # Dummy X server for headless environments
-    libutempter0 \       
+    xserver-xorg-video-dummy \
     # Supports session management and terminal multiplexers
-    gnupg2 \             
+    libutempter0 \  
     # Enables secure communication and package verification
-    sudo \               
+    gnupg2 \             
     # Allows running commands as root
+    sudo \               
     # Clean up unnecessary files to reduce image size
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
