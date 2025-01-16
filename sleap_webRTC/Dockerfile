@@ -17,7 +17,7 @@ RUN pip install aiortc asyncio websockets
 # Copy the sleap_webRTC directory into the image's root dir
 COPY . .
 
-# Port exposed by the container NOT computer (localhost)
+# Port exposed by the container, NOT computer (localhost)
 EXPOSE 8080
 
 # Signaling server -> worker -> client in sequenece
