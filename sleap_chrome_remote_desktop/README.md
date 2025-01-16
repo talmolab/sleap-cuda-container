@@ -5,11 +5,11 @@ This repo contains a DockerFile for a lightweight container (~9.75 GB) with the 
 
 The base image used is [eberrigan/sleap-cuda:latest](https://hub.docker.com/layers/eberrigan/sleap-cuda/latest/images/sha256-9cc93c86cc60d0f8e357bf58c2901d9b29a509c70ae16ed90ea56ac6d33418e7?context=repo).
 
-- The Dockerfile is located at `docker/Dockerfile`.
+- The Dockerfile is located at `./sleap_chrome_remote_desktop/Dockerfile`.
 - The repo has CI set up in `.github/workflows` for building and pushing the image when making changes.
   - The workflow uses the linux/amd64 platform to build. 
-- `.devcontainer/devcontainer.json` is convenient for developing inside a container made with the DockerFile using Visual Studio Code.
-- Test data for training is located in `tests/data`.
+- `./sleap_chrome_remote_desktop/.devcontainer/devcontainer.json` is convenient for developing inside a container made with the DockerFile using Visual Studio Code.
+- Test data for training is located in `./tests/data`.
 
 ## Installation
 
@@ -62,14 +62,14 @@ docker run --rm -it --gpus=all sleap-chrome-remote-desktop
 
 # Connecting to the Chrome Remote Desktop
 
-This guide explains how to connect to the Chrome Remote Desktop server running in the container to access the graphical user interface (GUI).
+This guide explains how to connect to the Chrome Remote Desktop server running in the container to access SLEAP installed in the container, including the SLEAP GUI.
 
 ## Prerequisites
 
 1. **Google Account**: You need a Google account to use Chrome Remote Desktop.
 2. **Chrome Browser**: You need to have the Chrome browser installed on your local machine.
 3. **Docker Setup**: 
-   - Ensure Docker is installed on your local machine.
+   - Ensure Docker is installed and running on your system.
 
 ## Steps to Connect to the Chrome Remote Desktop
 
@@ -78,12 +78,12 @@ This guide explains how to connect to the Chrome Remote Desktop server running i
 Start the Docker container with the Chrome Remote Desktop server running in it.
 
 ```bash
-docker run --rm -it --gpus=all <your-container-name> bash
+docker run --rm -it --gpus=all <your-container-name>
 ```
 
 ### 2. Connect to the Chrome Remote Desktop
 
-1. Go to [https://remotedesktop.google.com/access](https://remotedesktop.google.com/access) in your Chrome browser.
+1. On your local machine, go to [https://remotedesktop.google.com/access](https://remotedesktop.google.com/access) in your Chrome browser.
 
 2. Sign in with your Google account.
 
@@ -96,7 +96,7 @@ docker run --rm -it --gpus=all <your-container-name> bash
     --name=$(hostname)
   ```
 
-1. Run the provided command in your terminal with Docker container running. Make sure to refresh the website. 
+1. Run the provided command in your remote machine's terminal with Docker container running. Make sure to refresh the website. 
 
 2. When prompted, enter 6-digit PIN. This number will be used for additional authorization when you connect later.
 
@@ -112,7 +112,7 @@ docker run --rm -it --gpus=all <your-container-name> bash
 
 ### 4. Access the GUI
 
-Once connected, you'll see the desktop environment configured in the container. You can now open and use GUI-based applications such as `sleap-label`.
+Once connected to the remote machine, open a terminal and use SLEAP commands like `sleap-label`. The GUI should be displayed in your chrome remote desktop display environment on your local machine.
 
 ## Contributing
 - Use the `devcontainer.json` to open the folder `sleap_chrome_remote_desktop` in a dev container using VS Code.

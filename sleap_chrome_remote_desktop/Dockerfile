@@ -7,26 +7,40 @@ FROM eberrigan/sleap-cuda:latest
 ARG USERNAME="tutorial"
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install necessary packages for Chrome Remote Desktop
-# psmisc and python3-psutil and python3-packaging and python3-xdg and libutempter0 for GCRD to work
+# Update package lists and install necessary packages for Chrome Remote Desktop (CRD) setup
 RUN apt-get update && apt-get install -y \
+    # Tools for downloading files and dependencies
     curl \
+    # Base packages for compatibility with GCC-10 and other software
     gcc-10-base \
     libgcc-s1 \
+    # XFCE4 desktop environment for lightweight graphical interface
     xfce4 \
     desktop-base \
+    # Required for session and screen management
     dbus-x11 \
     xscreensaver \
     xbase-clients \
     xvfb \
-    python3-packaging \
-    python3-psutil \
-    psmisc \
-    xserver-xorg-video-dummy \
-    python3-xdg \ 
-    libutempter0 \
-    gnupg2 \
-    sudo \
+    # Python packages required by Chrome Remote Desktop
+    # Handles versioning and dependency management for Python packages
+    python3-packaging \   
+    python3-psutil \     
+    # Provides system utilization and process management utilities
+    python3-xdg \        
+    # Handles X Desktop Group file format support
+    # Miscellaneous dependencies
+    psmisc \             
+    # Provides process management utilities
+    xserver-xorg-video-dummy \  
+    # Dummy X server for headless environments
+    libutempter0 \       
+    # Supports session management and terminal multiplexers
+    gnupg2 \             
+    # Enables secure communication and package verification
+    sudo \               
+    # Allows running commands as root
+    # Clean up unnecessary files to reduce image size
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install Chrome Remote Desktop
@@ -38,8 +52,10 @@ RUN  curl https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /
     # Clean up to reduce image size
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
+# Configure Chrome Remote Desktop to use Xfce by default
 RUN echo "exec /etc/X11/Xsession /usr/bin/xfce4-session" > /etc/chrome-remote-desktop-session
 
+# Because there is no display connected to your instance, disable the display manager service on your instance
 RUN systemctl disable lightdm.service
 
 # Create the user USERNAME
@@ -51,12 +67,12 @@ RUN useradd -m -s /bin/bash ${USERNAME} && echo "${USERNAME}:password" | chpassw
 # Add USERNAME to the chrome-remote-desktop group
 RUN usermod -aG chrome-remote-desktop ${USERNAME}
 
-# Relax permissions on Python site-packages
+# Relax permissions on Python site-packages so that packages can write.
 RUN chmod -R a+w /usr/local/lib/python3.8/dist-packages
 
-# Set up Chrome Remote Desktop for the user
+# Switch to non-root user for Google Chrome Remote Desktop to work.
 USER ${USERNAME}
 WORKDIR /home/${USERNAME}
 
-# Entrypoint
+# Entrypoint included since opening terminal is needed to authorize connect of the remote computer to your Google Chrome account. 
 ENTRYPOINT [ "/bin/bash" ]
