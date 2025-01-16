@@ -1,7 +1,7 @@
 # sleap-chrome-remote-desktop
 
 ## Description
-This repo contains a DockerFile for a lightweight container (~9.75 GB) with the PyPI installation of SLEAP and all of its dependencies and a Chrome Remote Desktop server.
+This folder of the repo contains a DockerFile for a lightweight container (~9.75 GB) with the PyPI installation of SLEAP and all of its dependencies and a Chrome Remote Desktop server.
 
 The base image used is [eberrigan/sleap-cuda:latest](https://hub.docker.com/layers/eberrigan/sleap-cuda/latest/images/sha256-9cc93c86cc60d0f8e357bf58c2901d9b29a509c70ae16ed90ea56ac6d33418e7?context=repo).
 
