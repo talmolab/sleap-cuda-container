@@ -1,47 +1,25 @@
-# Dummy worker for testing purposes
 import asyncio
 import websockets
 import json
 from aiortc import RTCPeerConnection, RTCSessionDescription, RTCDataChannel
 
 async def handle_connection(pc, websocket):
-    # listen for incoming data channel -> set up event listener for incoming messages on that channel
-    @pc.on("datachannel")
-    def on_datachannel(channel):
-        # listen for incoming messages on the channel
-        @channel.on("message")
-        async def on_message(message):
-            # print to worker terminal and send to client terminal
-            print(f"Worker received: {message}")
-            response = f"Worker response: {message}"
-            await channel.send(response)
-            
-            # Process the data and send a response
-            response = {"message": f"Worker received: {data['message']}"}
-            await channel.send(json.dumps(response))
+    # test print 
+    print(f"the ICE connection state is now {pc.iceConnectionState}")
 
-    # ICE, or Interactive Connectivity Establishment, is a protocol used in WebRTC to establish a connection
-    @pc.on("iceconnectionstatechange")
-    async def on_iceconnectionstatechange():
-        print(f"ICE connection state is now {pc.iceConnectionState}")
-        print(pc.iceConnectionState)
-        if pc.iceConnectionState == "failed":
-            print('ICE connection failed')
-            await pc.close()
-            await websocket.close()
-    
     async for message in websocket:
+        print(message)
         try:
             data = json.loads(message)
             if data['type'] == "offer":
                 # set the remote description of the RTCPeerConnection object
-                await pc.setRemoteDescription(RTCSessionDescription(sdp=data['sdp'], type=data['type']))
+                await pc.setRemoteDescription(RTCSessionDescription(sdp=data['sdp'], type='offer')) 
                 
                 # create an answer to the offer
                 await pc.setLocalDescription(await pc.createAnswer())
                 
                 # send the answer to the client
-                await websocket.send(json.dumps({'type': 'answer', 'sdp': pc.localDescription.sdp}))
+                await websocket.send(json.dumps({'type': pc.localDescription.type, 'target': data['target'], 'sdp': pc.localDescription.sdp}))
             else:
                 print(f"Unhandled message: {data}")
         
@@ -62,10 +40,40 @@ async def run_worker(peer_id):
         # create a new RTCPeerConnection object to handle WebRTC communication
         pc = RTCPeerConnection()
 
+        data_channel = pc.createDataChannel("my-data-channel")
+
+        # listen for incoming data channel -> set up event listener for incoming messages on that channel
+        @pc.on("datachannel")
+        def on_datachannel(channel):
+            # listen for incoming messages on the channel
+            @channel.on("message")
+            async def on_message(message):
+                # print to worker terminal and send to client terminal
+                print(f"Worker received: {message}")
+                response = f"Worker response: Hello client, I am worker {channel.label}"
+                await channel.send(response)
+                
+                
+                # # Process the data and send a response
+                # response = {"message": f"Worker received: {data['message']}"}
+                # await channel.send(json.dumps(response))
+        
+        # ICE, or Interactive Connectivity Establishment, is a protocol used in WebRTC to establish a connection
+        @pc.on("iceconnectionstatechange")
+        async def on_iceconnectionstatechange():
+            print(f"ICE connection state is now {pc.iceConnectionState}")
+            print(pc.iceConnectionState)
+            if pc.iceConnectionState == "failed":
+                print('ICE connection failed')
+                await pc.close()
+                await websocket.close()
+
         # handle incoming messages from server (e.g. answers)
         await handle_connection(pc, websocket)
         
 if __name__ == "__main__":
     asyncio.run(run_worker("worker1"))
+
+    
 
     

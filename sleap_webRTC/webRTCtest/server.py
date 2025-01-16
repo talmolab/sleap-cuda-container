@@ -1,5 +1,3 @@
-# This is the signaling server for the WebRTC connection between the two clients
-
 import asyncio
 import websockets
 import json
@@ -17,6 +15,7 @@ async def handle_client(websocket):
         async for message in websocket:
             try:
                 data = json.loads(message)
+                print(f"Received message: {data}")
 
                 if data['type'] == "register":
                     # formatted as "register:peer_id"
@@ -31,7 +30,7 @@ async def handle_client(websocket):
                     response = {'type': 'available_peers', 'peers': list(connected_peers.keys())}
                     await websocket.send(json.dumps(response))
 
-                elif data['type'] == "offer" or data['type'] == "answer":
+                elif data['type'] == "offer":
                     # handle offer/exchange between peers
                     # formatted as "offer:peer_id" or "answer:peer_id"
                     target_peer_id = data['target']
@@ -44,6 +43,20 @@ async def handle_client(websocket):
                         await target_websocket.send(json.dumps(data))
                     else:
                         print(f"Peer not found: {target_peer_id}")
+
+                elif data['type'] == "answer":
+                    # hardcoded for now
+                    target_peer_id = 'client1'
+                    target_websocket = connected_peers.get(target_peer_id)
+
+                    # if target_peer_id exists, send message to target_peer_id
+                    # update server terminal
+                    if target_websocket:
+                        print(f"Forwarding message from {peer_id} to {target_peer_id}")
+                        await target_websocket.send(json.dumps(data))
+                    else:
+                        print(f"Peer not found: {target_peer_id}")
+
             except json.JSONDecodeError:
                 print("Invalid JSON received")
 
