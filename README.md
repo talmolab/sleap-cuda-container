@@ -30,6 +30,12 @@ sleap-cuda-container (repo)
 │   ├── .dockerignore
 │   ├── .devcontainer
 │
+├── sleap_chrome_remote_desktop
+│   ├── README.md
+│   ├── Dockerfile
+│   ├── .dockerignore
+│   ├── .devcontainer
+│
 ├── tests
 ├── README.md
 ├── .gitignore
@@ -52,6 +58,10 @@ sleap-cuda-container (repo)
   - Adds the **VS Code CLI** for establishing a remote tunnel connection to the container.
   - Enables headless interaction with the container through VS Code.
   - Note: **VS Code Tunnels do not yet support port forwarding**, so graphical applications (like the SLEAP GUI) cannot be used with this container.
+
+- **`sleap_chrome_remote_desktop/`**:
+  - Adds **Chrome Remote Desktop** to the base image, allowing you to connect to the container's GUI using a Chrome browser.
+  - See the `README.md` in this folder for setup and connection instructions.
 
 - **`tests/`**:
   - Contains test scripts for validating the functionality of the Docker configurations.
