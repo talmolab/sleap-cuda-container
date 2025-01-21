@@ -3,10 +3,19 @@ import websockets
 import json
 from aiortc import RTCPeerConnection, RTCSessionDescription, RTCDataChannel
 
-async def send_message(channel):
-    if channel.readyState == "open":
-        await channel.send("Hello, worker! I am the client.")
-    else:
+async def send_receive_messages(channel):
+    while channel.readyState == "open": 
+        message = input("Enter message to send (or type 'quit' to exit): ")
+        if message.lower() == "quit":
+            break
+
+        await channel.send(message)
+        print("Message sent to worker.")
+
+        async for msg in channel:
+            print(f"received: {msg}")
+
+    if channel.readyState != "open":
         print(f"Data channel not open. Ready state is: {channel.readyState}")
 
 async def run_client(peer_id):
@@ -44,36 +53,44 @@ async def run_client(peer_id):
         @pc.on("iceconnectionstatechange")
         async def on_iceconnectionstatechange():
             print(f"ICE connection state is now {pc.iceConnectionState}")
-            if pc.iceConnectionState == "failed":
+            if pc.iceConnectionState in ["connected", "completed"]:
+                print("ICE connection established.")
                 connected_event.set()
-                print('ICE connection failed')
-            elif pc.iceConnectionState == "connected":
+            elif pc.iceConnectionState in ["failed", "disconnected"]:
+                print("ICE connection failed/disconnected. Closing connection.")
                 connected_event.set()
-                print('ICE connection succeeded')
 
         @pc.on("icecandidate")
         async def on_icecandidate(candidate):
             if candidate:
                 await websocket.send(json.dumps({'type': 'candidate', 'candidate': candidate}))
         
+        # handle messages incoming from the worker (i.e. NOT server atp)
         data_channel = pc.createDataChannel("my-data-channel")
 
         @data_channel.on("open")
         def on_data_channel_open():
             print("Data channel is open")
-            asyncio.create_task(send_message(data_channel))
+            asyncio.create_task(send_receive_messages(data_channel))
             data_channel_open_event.set()
+        
 
         # register an event handler for the 'message' event on the RTCPeerConnection object
         @data_channel.on("message")
         async def on_message(message):
             print(f"Client received: {message}")
+            asyncio.create_task(send_receive_messages(data_channel))
+            data_channel_open_event.set()
+            # asyncio.create_task(send_receive_messages(data_channel))
+            # data_channel_open_event.set()
+            # print(data_channel_open_event)
 
-        @pc.on("datachannel")
-        def on_data_channel(channel):
-            @channel.on("message")
-            async def on_message(message):
-                print(f"Client received: {message}")
+        # @pc.on("datachannel")
+        # def on_data_channel(channel):
+        #     @channel.on("message")
+        #     async def on_message(message):
+        #         print(f"Client received: {message}")
+        #         print("on_message")
 
 
         await pc.setLocalDescription(await pc.createOffer())
@@ -93,16 +110,19 @@ async def run_client(peer_id):
         
         await asyncio.gather(connected_event.wait(), data_channel_open_event.wait())
 
-        if pc.iceConnectionState == "failed":
-            print("ICE connection failed. Closing connection.")
+        if pc.iceConnectionState in ["failed", "disconnected"]:
+            print("ICE connection failed or disconnected. Closing connection.")
             return
 
         # send a message to the worker via the data channel
         # await data_channel.send("Hello, worker! I am the from client.")
 
-        await asyncio.sleep(10)
-        await pc.close()
-        print("Client closed connection.")
+        try:
+            await asyncio.sleep(3600)
+        except asyncio.CancelledError:
+            print("Client connection closed.")
+        finally:
+            await pc.close()
 
 if __name__ == "__main__":
     asyncio.run(run_client("client1"))

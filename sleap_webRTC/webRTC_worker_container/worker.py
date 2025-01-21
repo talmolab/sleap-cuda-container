@@ -3,6 +3,20 @@ import websockets
 import json
 from aiortc import RTCPeerConnection, RTCSessionDescription, RTCDataChannel
 
+async def send_worker_messages(channel):
+    while channel.readyState == "open": 
+        message = input("Enter message to send (or type 'quit' to exit): ")
+        if message.lower() == "quit":
+            break
+        await channel.send(message)
+        print("Message sent to client.")
+
+        async for msg in channel:
+            print(f"received: {msg}")
+
+    if channel.readyState != "open":
+        print(f"Data channel not open. Ready state is: {channel.readyState}")
+
 async def handle_connection(pc, websocket):
     # test print 
     print(f"the ICE connection state is now {pc.iceConnectionState}")
@@ -20,6 +34,10 @@ async def handle_connection(pc, websocket):
                 
                 # send the answer to the client
                 await websocket.send(json.dumps({'type': pc.localDescription.type, 'target': data['target'], 'sdp': pc.localDescription.sdp}))
+            elif data['type'] == 'candidate':
+                print("Received ICE candidate")
+                candidate = data['candidate']
+                await pc.addIceCandidate(candidate)
             else:
                 print(f"Unhandled message: {data}")
         
@@ -39,19 +57,24 @@ async def run_worker(peer_id):
 
         # create a new RTCPeerConnection object to handle WebRTC communication
         pc = RTCPeerConnection()
-
-        data_channel = pc.createDataChannel("my-data-channel")
+        data_channel = None
 
         # listen for incoming data channel -> set up event listener for incoming messages on that channel
         @pc.on("datachannel")
         def on_datachannel(channel):
             # listen for incoming messages on the channel
+            nonlocal data_channel
+            data_channel = channel
             @channel.on("message")
             async def on_message(message):
                 # print to worker terminal and send to client terminal
                 print(f"Worker received: {message}")
-                response = f"Worker response: Hello client, I am worker {channel.label}"
-                await channel.send(response)
+                if message.lower() == "quit":
+                    print("Quitting")
+                    await pc.close()
+                    return
+                
+                asyncio.create_task(send_worker_messages(channel))
                 
                 
                 # # Process the data and send a response
@@ -62,18 +85,24 @@ async def run_worker(peer_id):
         @pc.on("iceconnectionstatechange")
         async def on_iceconnectionstatechange():
             print(f"ICE connection state is now {pc.iceConnectionState}")
-            print(pc.iceConnectionState)
             if pc.iceConnectionState == "failed":
                 print('ICE connection failed')
                 await pc.close()
-                await websocket.close()
+                # await websocket.close()
 
         # handle incoming messages from server (e.g. answers)
         await handle_connection(pc, websocket)
+
+        try:
+            await asyncio.sleep(3600)
+        except asyncio.CancelledError:
+            print("Worker connection closed.")
+        finally:
+            await pc.close()
+            await websocket.close()
         
 if __name__ == "__main__":
     asyncio.run(run_worker("worker1"))
-
     
 
     
