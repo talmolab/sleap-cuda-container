@@ -40,7 +40,7 @@ jobs:
           sanitized_platform="${sanitized_platform/\//-}" # Replace / with -
           echo "sanitized_platform=$sanitized_platform" >> $GITHUB_OUTPUT
 
-      # Step 4: Set up Docker Buildx
+      # Step 4: Set up Docker Buildx for multi-architecture builds
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
         with:
