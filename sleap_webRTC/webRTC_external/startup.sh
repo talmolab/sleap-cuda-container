@@ -8,4 +8,4 @@ echo "Server started"
 docker run --rm -t -p 8080:8080 
 
 # start client
-python -c client.py
+python -c client.py 
