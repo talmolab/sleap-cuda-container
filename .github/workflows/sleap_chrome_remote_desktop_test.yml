@@ -1,13 +1,13 @@
-name: Build and Push sleap-cuda (Test Workflow)
+name: Build and Push sleap-chrome-remote-desktop (Test Workflow)
 
-# Run on push to branches other than main for sleap_cuda
+# Run on push to branches other than main for sleap_chrome_remote_desktop
 on:
   push:
     branches-ignore:
       - main
     paths:
-      - sleap_cuda/** # Only run on changes to sleap_cuda
-      - .github/workflows/sleap_cuda_test.yml # Only run on changes to this workflow
+      - sleap_chrome_remote_desktop/** # Only run on changes to sleap_chrome_remote_desktop
+      - .github/workflows/sleap_chrome_remote_desktop_test.yml # Only run on changes to this workflow
 
 jobs:
   build:
@@ -20,11 +20,10 @@ jobs:
       git_sha: ${{ steps.get_sha.outputs.sha }}
       sanitized_platform: ${{ steps.sanitize_platform.outputs.sanitized_platform }}
     steps:
-      # Step 1: Checkout the repository
       - name: Checkout code
+        # https://github.com/actions/checkout
         uses: actions/checkout@v4
 
-      # Step 2: Get Git SHA for tagging the image
       - name: Get Git SHA
         id: get_sha
         run: echo "sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
@@ -32,7 +31,7 @@ jobs:
       - name: Debug Git SHA
         run: echo "Git SHA ${{ steps.get_sha.outputs.sha }}"
 
-      # Step 3: Sanitize platform name for tagging
+      # Generate a sanitized platform string with slashes replaced by dashes
       - name: Sanitize platform name
         id: sanitize_platform
         run: |
@@ -50,17 +49,17 @@ jobs:
       - name: Authenticate to GitHub Container Registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-      # Step 6: Build and push the Docker image to GitHub Container Registry
       - name: Build and push Docker image
+        # https://github.com/docker/build-push-action
         uses: docker/build-push-action@v6
         with:
-          context: ./sleap_cuda # Build context wrt the root of the repository
-          file: ./sleap_cuda/Dockerfile # Path to Dockerfile wrt the root of the repository
+          context: ./sleap_chrome_remote_desktop # Build context wrt the root of the repository
+          file: ./sleap_chrome_remote_desktop/Dockerfile # Path to Dockerfile wrt the root of the repository
           platforms: ${{ matrix.platform }}
-          push: true # Push the image to GitHub Container Registry
+          push: true # Push the image to Docker Hub
           # Tags all include "-test" to differentiate from production images
           tags: |
-            ghcr.io/${{ github.repository_owner }}/sleap-cuda:${{ steps.sanitize_platform.outputs.sanitized_platform }}-test
-            ghcr.io/${{ github.repository_owner }}/sleap-cuda:${{ steps.sanitize_platform.outputs.sanitized_platform }}-nvidia-cuda-11.3.1-cudnn8-runtime-ubuntu20.04-test
-            ghcr.io/${{ github.repository_owner }}/sleap-cuda:${{ steps.sanitize_platform.outputs.sanitized_platform }}-sleap-1.3.4-test
-            ghcr.io/${{ github.repository_owner }}/sleap-cuda:${{ steps.sanitize_platform.outputs.sanitized_platform }}-${{ steps.get_sha.outputs.sha }}-test
+            ghcr.io/${{ github.repository_owner }}/sleap-chrome-remote-desktop:${{ steps.sanitize_platform.outputs.sanitized_platform }}-test
+            ghcr.io/${{ github.repository_owner }}/sleap-chrome-remote-desktop:${{ steps.sanitize_platform.outputs.sanitized_platform }}-nvidia-cuda-11.3.1-cudnn8-runtime-ubuntu20.04-test
+            ghcr.io/${{ github.repository_owner }}/sleap-chrome-remote-desktop:${{ steps.sanitize_platform.outputs.sanitized_platform }}-sleap-1.3.4-test
+            ghcr.io/${{ github.repository_owner }}/sleap-chrome-remote-desktop:${{ steps.sanitize_platform.outputs.sanitized_platform }}-${{ steps.get_sha.outputs.sha }}-test

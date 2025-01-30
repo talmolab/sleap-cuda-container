@@ -112,10 +112,7 @@ This guide explains how to connect to the VNC server running inside the SLEAP co
 Start the container with the necessary port mapping to expose the VNC server on port `5901`:
 
 ```bash
-docker run -it --rm \
-  -p 5901:5901 \
-  --gpus=all \
-  your-container-name
+docker run -it --rm -p 5901:5901 --gpus=all <your-container-name>
 ```
 
 > **Note:** If you're using a Dev Container setup, the port mapping is already included in the configuration.
@@ -216,7 +213,8 @@ docker run -v ./tests/data:/workspace/tests/data --gpus all -p 5901:5901 -it ebe
 To build locally for testing you can use the command:
 
 ```
-docker build --platform linux/amd64 .
+docker build --no-cache -t sleap-vnc ./sleap_vnc_connect
+docker run --gpus all -dt --rm --name sleap-vnc -p 5901:5901 sleap-vnc
 ```
 
 ## Support
