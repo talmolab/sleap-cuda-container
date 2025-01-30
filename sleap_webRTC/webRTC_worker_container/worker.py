@@ -76,7 +76,7 @@ async def run_worker(pc, peer_id):
 
     # 1. worker registers with the signaling server (temp: localhost:8080) via websocket connection
     # this is how the worker will know the client peer exists
-    async with websockets.connect("ws://localhost:8080") as websocket:
+    async with websockets.connect("ws://host.docker.internal:8080") as websocket:
         # 1a. register the worker with the server
         await websocket.send(json.dumps({'type': 'register', 'peer_id': peer_id}))
         print(f"{peer_id} sent to signaling server for registration!")
