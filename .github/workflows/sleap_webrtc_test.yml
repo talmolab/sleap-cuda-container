@@ -45,12 +45,9 @@ jobs:
         with:
           driver: docker-container # Use a container driver for Buildx (default)
 
-      - name: Log in to Docker Hub
-        # https://github.com/docker/login-action
-        uses: docker/login-action@v3
-        with:
-          username: ${{ vars.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      # Step 5: Authenticate to GitHub Container Registry
+      - name: Authenticate to GitHub Container Registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Build and push Docker image
         # https://github.com/docker/build-push-action
