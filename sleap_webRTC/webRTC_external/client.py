@@ -1,9 +1,25 @@
 import asyncio
 import websockets
 import json
-from aiortc import RTCPeerConnection, RTCSessionDescription, RTCDataChannel
 
-async def handle_connection(pc, websocket):
+from aiortc import RTCPeerConnection, RTCSessionDescription, RTCDataChannel
+from websockets import WebSocketClientProtocol
+
+async def handle_connection(pc: RTCPeerConnection, websocket):
+    """Handles receiving SDP answer from Worker and ICE candidates from Worker.
+
+    Args:
+        pc: RTCPeerConnection object
+        websocket: websocket connection object 
+    
+    Returns:
+		None
+        
+    Raises:
+		JSONDecodeError: Invalid JSON received
+		Exception: An error occurred while handling the message
+    """
+
     try:
         async for message in websocket:
             data = json.loads(message)
@@ -33,12 +49,37 @@ async def handle_connection(pc, websocket):
         print(f"Error handling message: {e}")
 
 
-async def run_client(pc, peer_id):
+async def run_client(pc, peer_id: str):
+    """Sends initial SDP offer to worker peer and establishes both connection & datachannel to be used by both parties.
+	
+		Initializes websocket to select worker peer and sends datachannel object to worker.
+	
+    Args:
+		pc: RTCPeerConnection object
+		peer_id: unique str identifier for client
+        
+    Returns:
+		None
+        
+    Raises:
+		Exception: An error occurred while running the client
+    """
 
     channel = pc.createDataChannel("my-data-channel")
     print("channel(%s) %s" % (channel.label, "created by local party."))
 
     def send_client_messages():
+        """Handles typed messages from client to be sent to worker peer.
+        
+		Takes input from client and sends it to worker peer via datachannel.
+	
+        Args:
+			None
+        
+		Returns:
+			None
+        
+        """
         if channel.readyState != "open":
             print(f"Data channel not open. Ready state is: {channel.readyState}")
         
@@ -53,6 +94,14 @@ async def run_client(pc, peer_id):
 
     @channel.on("open")
     def on_channel_open():
+        """Event handler function for when the datachannel is open.
+        Args:
+			None
+            
+        Returns:
+			None
+        """
+
         print(f"{channel.label} is open")
         send_client_messages()
     
