@@ -36,6 +36,19 @@ sleap-cuda-container (repo)
 │   ├── .dockerignore
 │   ├── .devcontainer
 │
+├── sleap_webRTC
+|   ├── webRTC_external
+│       ├── client.py
+│       ├── server.py
+│       ├── env.yaml
+│       ├── startup.sh
+|   ├── webRTC_worker_container
+│       ├── Dockerfile
+│       ├── worker.py
+│       ├── .dockerignore
+│       ├── .devcontainer
+│   ├── README.md
+│   
 ├── tests
 ├── README.md
 ├── .gitignore
@@ -61,6 +74,10 @@ sleap-cuda-container (repo)
 
 - **`sleap_chrome_remote_desktop/`**:
   - Adds **Chrome Remote Desktop** to the base image, allowing you to connect to the container's GUI using a Chrome browser.
+  - See the `README.md` in this folder for setup and connection instructions.
+    
+- **`sleap_webRTC/`**:
+  - Adds a **Worker** to the base image, allowing a client to send commands to the container's GUI and maintain connection via webRTC.
   - See the `README.md` in this folder for setup and connection instructions.
 
 - **`tests/`**:
