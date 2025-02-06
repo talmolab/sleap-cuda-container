@@ -108,3 +108,21 @@ docker build --platform linux/amd64 ./sleap_cuda
 
 ## Support
 contact Elizabeth at eberrigan@salk.edu
+
+
+## Temp 
+1. start the server
+   - mamba env create -f env.yaml to make conda env for the first time
+   - mamba activate sleap-webrtc to activate conda env every time
+   - python3 sleap_webRTC\webRTC_external\server.py
+2. start the worker in the container
+   - make sure to have docker desktop running on computer and signed in
+   - visit https://github.com/talmolab/sleap-cuda-container/pkgs/container/sleap-webrtc for latest docker image to pull the test image
+   - docker pull ghcr.io/talmolab/sleap-webrtc:linux-amd64-99025482bab7ecd1ac7859f8eff1773738c5a17e-test (git hash changes each time we modify the image)
+   - docker run -it ghcr.io/talmolab/sleap-webrtc:linux-amd64-99025482bab7ecd1ac7859f8eff1773738c5a17e-test bash to run interactive container with bash
+   - python3 /app/worker.py
+3. start the client
+   - new terminal
+   - mamba activate sleap-webrtc to activate conda env every time
+   - python3 sleap_webRTC\webRTC_external\client.py
+4. send messages between client and worker
