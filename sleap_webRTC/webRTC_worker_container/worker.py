@@ -18,7 +18,8 @@ async def send_worker_messages(channel, pc, websocket):
     message = input("Enter message to send (or type 'quit' to exit): ")
 
     if message.lower() == "quit":
-        await clean_exit(pc, websocket)
+        print("Quitting...")
+        await pc.close()
         return
 
     if channel.readyState != "open":
@@ -110,7 +111,7 @@ async def run_worker(pc, peer_id):
             #     return
             
             # send message to client
-            await send_worker_messages(channel, peer_id)
+            await send_worker_messages(channel, pc, websocket)
 
 
     # 1. worker registers with the signaling server (temp: localhost:8080) via websocket connection
