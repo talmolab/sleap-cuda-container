@@ -3,17 +3,30 @@ import websockets
 import json
 from aiortc import RTCPeerConnection, RTCSessionDescription, RTCDataChannel
 
-def send_worker_messages(channel, peer_id):
+async def clean_exit(pc, websocket):
+    print("Closing WebRTC connection...")
+    await pc.close()
+
+    print("Closing websocket connection...")
+    await websocket.close()
+
+    print("Client shutdown complete. Exiting...")
+
+
+async def send_worker_messages(channel, pc, websocket):
+
+    message = input("Enter message to send (or type 'quit' to exit): ")
+
+    if message.lower() == "quit":
+        await clean_exit(pc, websocket)
+        return
+
     if channel.readyState != "open":
         print(f"Data channel not open. Ready state is: {channel.readyState}")
         return
    
-    message = input("Enter message to send (or type 'quit' to exit): ")
-    if message.lower() == "quit":
-        print("Quitting...")
-        return
     channel.send(message)
-    print(f"Message sent to {peer_id}.")
+    print(f"Message sent to client.")
 
 
 async def handle_connection(pc, websocket):
@@ -40,11 +53,16 @@ async def handle_connection(pc, websocket):
                 candidate = data['candidate']
                 await pc.addIceCandidate(candidate)
 
+            elif data['type'] == 'quit': # NOT initiator, received quit request from worker
+                print("Received quit request from Client. Closing connection...")
+                await clean_exit(pc, websocket)
+                return
+
             # 3. error handling
             else:
                 print(f"Unhandled message: {data}")
-                print("exiting...")
-                break
+                # print("exiting...")
+                # break
     
     except json.JSONDecodeError:
         print("Invalid JSON received")
@@ -61,17 +79,38 @@ async def run_worker(pc, peer_id):
     def on_datachannel(channel):
         # listen for incoming messages on the channel
         print("channel(%s) %s" % (channel.label, "created by remote party & received."))
-        
-        @channel.on("message")
-        def on_message(message):
-            # receive client message
-            print(f"Worker received: {message}")
-            if message.lower() == "quit":
-                print("Quitting...")
+
+        @pc.on("iceconnectionstatechange")
+        async def on_iceconnectionstatechange():
+            print(f"ICE connection state is now {pc.iceConnectionState}")
+            if pc.iceConnectionState == "failed":
+                print('ICE connection failed')
+                await clean_exit(pc, websocket)
+                return
+            elif pc.iceConnectionState in ["failed", "disconnected"]:
+                print("ICE connection failed/disconnected. Closing connection.")
+                await clean_exit(pc, websocket)
+                return
+            elif pc.iceConnectionState == "closed":
+                print("ICE connection closed.")
+                await clean_exit(pc, websocket)
                 return
             
+        @channel.on("open")
+        def on_channel_open():
+            print(f'{channel.label} channel is open')
+        
+        @channel.on("message")
+        async def on_message(message):
+            # receive client message
+            print(f"Worker received: {message}")
+
+            # if message.lower() == "quit":
+            #     print("Quitting...")
+            #     return
+            
             # send message to client
-            send_worker_messages(channel, peer_id)
+            await send_worker_messages(channel, peer_id)
 
 
     # 1. worker registers with the signaling server (temp: localhost:8080) via websocket connection
@@ -92,8 +131,16 @@ async def run_worker(pc, peer_id):
         print(f"ICE connection state is now {pc.iceConnectionState}")
         if pc.iceConnectionState == "failed":
             print('ICE connection failed')
-            await pc.close()
-            await websocket.close()
+            await clean_exit(pc, websocket)
+            return
+        elif pc.iceConnectionState in ["failed", "disconnected"]:
+            print("ICE connection failed/disconnected. Closing connection.")
+            await clean_exit(pc, websocket)
+            return
+        elif pc.iceConnectionState == "closed":
+            print("ICE connection closed.")
+            await clean_exit(pc, websocket)
+            return
          
 
     # try:
@@ -106,6 +153,12 @@ async def run_worker(pc, peer_id):
         
 if __name__ == "__main__":
     pc = RTCPeerConnection()
-    asyncio.run(run_worker(pc, "worker1"))
+    try:
+        asyncio.run(run_worker(pc, "worker1"))
+    except KeyboardInterrupt:
+        print("KeyboardInterrupt: Exiting...")
+    finally:
+        print("exited")
+        
 
     

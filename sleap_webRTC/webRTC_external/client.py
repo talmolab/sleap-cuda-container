@@ -5,6 +5,16 @@ import json
 from aiortc import RTCPeerConnection, RTCSessionDescription, RTCDataChannel
 from websockets import WebSocketClientProtocol
 
+async def clean_exit(pc, websocket):
+    print("Closing WebRTC connection...")
+    await pc.close()
+
+    print("Closing websocket connection...")
+    await websocket.close()
+
+    print("Client shutdown complete. Exiting...")
+
+
 async def handle_connection(pc: RTCPeerConnection, websocket):
     """Handles receiving SDP answer from Worker and ICE candidates from Worker.
 
@@ -35,6 +45,11 @@ async def handle_connection(pc: RTCPeerConnection, websocket):
                 print("Received ICE candidate")
                 candidate = data['candidate']
                 await pc.addIceCandidate(candidate)
+
+            elif data['type'] == 'quit': # NOT initiator, received quit request from worker
+                print("Worker has quit. Closing connection...")
+                await clean_exit(pc, websocket)
+                break
 
             # 3. error handling
             else:
@@ -68,7 +83,7 @@ async def run_client(pc, peer_id: str):
     channel = pc.createDataChannel("my-data-channel")
     print("channel(%s) %s" % (channel.label, "created by local party."))
 
-    def send_client_messages():
+    async def send_client_messages():
         """Handles typed messages from client to be sent to worker peer.
         
 		Takes input from client and sends it to worker peer via datachannel.
@@ -80,20 +95,23 @@ async def run_client(pc, peer_id: str):
 			None
         
         """
-        if channel.readyState != "open":
-            print(f"Data channel not open. Ready state is: {channel.readyState}")
-        
         message = input("Enter message to send (or type 'quit' to exit): ")
-        if message.lower() == "quit":
+
+        if message.lower() == "quit": # client is initiator, send quit request to worker
             print("Quitting...")
+            await pc.close()
             return 
 
+        if channel.readyState != "open":
+            print(f"Data channel not open. Ready state is: {channel.readyState}")
+            return 
+        
         channel.send(message)
         print(f"Message sent to worker.")
 
 
     @channel.on("open")
-    def on_channel_open():
+    async def on_channel_open():
         """Event handler function for when the datachannel is open.
         Args:
 			None
@@ -103,17 +121,17 @@ async def run_client(pc, peer_id: str):
         """
 
         print(f"{channel.label} is open")
-        send_client_messages()
+        await send_client_messages()
     
 
     @channel.on("message")
-    def on_message(message):
+    async def on_message(message):
         print(f"Client received: {message}")
-        if message.lower() == "quit":
-            print("Quitting")
-            return
+        # if message.lower() == "quit":
+        #     print("Quitting")
+        #     return
         
-        send_client_messages()
+        await send_client_messages()
 
         # asyncio.create_task(send_receive_messages(data_channel))
         # data_channel_open_event.set()
@@ -128,6 +146,12 @@ async def run_client(pc, peer_id: str):
             # connected_event.set()
         elif pc.iceConnectionState in ["failed", "disconnected"]:
             print("ICE connection failed/disconnected. Closing connection.")
+            await clean_exit(pc, websocket)
+            return
+        elif pc.iceConnectionState == "closed":
+            print("ICE connection closed.")
+            await clean_exit(pc, websocket)
+            return
 
 
     # 1. client registers with the signaling server (temp: localhost:8080) via websocket connection
@@ -205,5 +229,11 @@ async def run_client(pc, peer_id: str):
 
 if __name__ == "__main__":
     pc = RTCPeerConnection()
-    asyncio.run(run_client(pc, "client1"))
+    try: 
+        asyncio.run(run_client(pc, "client1"))
+    except KeyboardInterrupt:
+        print("KeyboardInterrupt: Exiting...")
+    finally:
+        print("exited")
+
     
