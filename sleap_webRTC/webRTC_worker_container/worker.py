@@ -8,17 +8,17 @@ import logging
 from aiortc import RTCPeerConnection, RTCSessionDescription, RTCDataChannel
 
 # setup logging
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.info)
 
 
 async def clean_exit(pc, websocket):
-    logging.INFO("Closing WebRTC connection...")
+    logging.info("Closing WebRTC connection...")
     await pc.close()
 
-    logging.INFO("Closing websocket connection...")
+    logging.info("Closing websocket connection...")
     await websocket.close()
 
-    logging.INFO("Client shutdown complete. Exiting...")
+    logging.info("Client shutdown complete. Exiting...")
 
 
 async def send_worker_messages(channel, pc, websocket):
@@ -26,16 +26,16 @@ async def send_worker_messages(channel, pc, websocket):
     message = input("Enter message to send (or type 'quit' to exit): ")
 
     if message.lower() == "quit":
-        logging.INFO("Quitting...")
+        logging.info("Quitting...")
         await pc.close()
         return
 
     if channel.readyState != "open":
-        logging.INFO(f"Data channel not open. Ready state is: {channel.readyState}")
+        logging.info(f"Data channel not open. Ready state is: {channel.readyState}")
         return
    
     channel.send(message)
-    logging.INFO(f"Message sent to client.")
+    logging.info(f"Message sent to client.")
 
 
 async def handle_connection(pc, websocket):
@@ -46,7 +46,7 @@ async def handle_connection(pc, websocket):
             # 1. receieve offer SDP from client (forwarded by signaling server)
             if data['type'] == "offer":
                 # 1a. set worker peer's remote description to the client's offer based on sdp data
-                logging.INFO('Received offer SDP')
+                logging.info('Received offer SDP')
 
                 await pc.setRemoteDescription(RTCSessionDescription(sdp=data['sdp'], type='offer')) 
                 
@@ -58,12 +58,12 @@ async def handle_connection(pc, websocket):
             
             # 2. to handle "trickle ICE" for non-local ICE candidates (might be unnecessary)
             elif data['type'] == 'candidate':
-                logging.INFO("Received ICE candidate")
+                logging.info("Received ICE candidate")
                 candidate = data['candidate']
                 await pc.addIceCandidate(candidate)
 
             elif data['type'] == 'quit': # NOT initiator, received quit request from worker
-                logging.INFO("Received quit request from Client. Closing connection...")
+                logging.info("Received quit request from Client. Closing connection...")
                 await clean_exit(pc, websocket)
                 return
 
@@ -86,35 +86,35 @@ async def run_worker(pc, peer_id, port_number):
     @pc.on("datachannel")
     def on_datachannel(channel):
         # listen for incoming messages on the channel
-        logging.INFO("channel(%s) %s" % (channel.label, "created by remote party & received."))
+        logging.info("channel(%s) %s" % (channel.label, "created by remote party & received."))
 
         @pc.on("iceconnectionstatechange")
         async def on_iceconnectionstatechange():
-            logging.INFO(f"ICE connection state is now {pc.iceConnectionState}")
+            logging.info(f"ICE connection state is now {pc.iceConnectionState}")
             if pc.iceConnectionState == "failed":
                 logging.DEBUG('ICE connection failed')
                 await clean_exit(pc, websocket)
                 return
             elif pc.iceConnectionState in ["failed", "disconnected"]:
-                logging.INFO("ICE connection failed/disconnected. Closing connection.")
+                logging.info("ICE connection failed/disconnected. Closing connection.")
                 await clean_exit(pc, websocket)
                 return
             elif pc.iceConnectionState == "closed":
-                logging.INFO("ICE connection closed.")
+                logging.info("ICE connection closed.")
                 await clean_exit(pc, websocket)
                 return
             
         @channel.on("open")
         def on_channel_open():
-            logging.INFO(f'{channel.label} channel is open')
+            logging.info(f'{channel.label} channel is open')
         
         @channel.on("message")
         async def on_message(message):
             # receive client message
-            logging.INFO(f"Worker received: {message}")
+            logging.info(f"Worker received: {message}")
 
             if message.lower() == "sleap-label": # TEST RECEIVING COMMMAND AND EXECUTING INSIDE DOCKER CONTAINER
-                logging.INFO(f"Running {message} command...")
+                logging.info(f"Running {message} command...")
                 try:
                     result = subprocess.run(
                         message, 
@@ -122,7 +122,7 @@ async def run_worker(pc, peer_id, port_number):
                         text=True,
                         check=True,                        
                     )
-                    logging.INFO(result.stdout) # simple print for now
+                    logging.info(result.stdout) # simple print for now
                 except:
                     logging.DEBUG("Error running SLEAP label command.")
             
@@ -135,27 +135,27 @@ async def run_worker(pc, peer_id, port_number):
     async with websockets.connect(f"ws://host.docker.internal:{port_number}") as websocket:
         # 1a. register the worker with the server
         await websocket.send(json.dumps({'type': 'register', 'peer_id': peer_id}))
-        logging.INFO(f"{peer_id} sent to signaling server for registration!")
+        logging.info(f"{peer_id} sent to signaling server for registration!")
 
         # 1b. handle incoming messages from server (e.g. answers)
         await handle_connection(pc, websocket)
-        logging.INFO(f"{peer_id} connected with client!" )
+        logging.info(f"{peer_id} connected with client!" )
 
 
     # ICE, or Interactive Connectivity Establishment, is a protocol used in WebRTC to establish a connection
     @pc.on("iceconnectionstatechange")
     async def on_iceconnectionstatechange():
-        logging.INFO(f"ICE connection state is now {pc.iceConnectionState}")
+        logging.info(f"ICE connection state is now {pc.iceConnectionState}")
         if pc.iceConnectionState == "failed":
             logging.DEBUG('ICE connection failed')
             await clean_exit(pc, websocket)
             return
         elif pc.iceConnectionState in ["failed", "disconnected"]:
-            logging.INFO("ICE connection failed/disconnected. Closing connection.")
+            logging.info("ICE connection failed/disconnected. Closing connection.")
             await clean_exit(pc, websocket)
             return
         elif pc.iceConnectionState == "closed":
-            logging.INFO("ICE connection closed.")
+            logging.info("ICE connection closed.")
             await clean_exit(pc, websocket)
             return
     
@@ -166,9 +166,9 @@ if __name__ == "__main__":
     try:
         asyncio.run(run_worker(pc, "worker1", port_number))
     except KeyboardInterrupt:
-        logging.INFO("KeyboardInterrupt: Exiting...")
+        logging.info("KeyboardInterrupt: Exiting...")
     finally:
-        logging.INFO("exited")
+        logging.info("exited")
         
 
     

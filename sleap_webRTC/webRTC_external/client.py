@@ -8,13 +8,13 @@ from aiortc import RTCPeerConnection, RTCSessionDescription, RTCDataChannel
 from websockets import WebSocketClientProtocol
 
 async def clean_exit(pc, websocket):
-    logging.INFO("Closing WebRTC connection...")
+    logging.info("Closing WebRTC connection...")
     await pc.close()
 
-    logging.INFO("Closing websocket connection...")
+    logging.info("Closing websocket connection...")
     await websocket.close()
 
-    logging.INFO("Client shutdown complete. Exiting...")
+    logging.info("Client shutdown complete. Exiting...")
 
 
 async def handle_connection(pc: RTCPeerConnection, websocket):
@@ -38,18 +38,18 @@ async def handle_connection(pc: RTCPeerConnection, websocket):
 
             # 1. receive answer SDP from worker and set it as this peer's remote description
             if data['type'] == 'answer':
-                logging.INFO(f"Received answer from worker: {data}")
+                logging.info(f"Received answer from worker: {data}")
 
                 await pc.setRemoteDescription(RTCSessionDescription(sdp=data['sdp'], type=data['type']))
 
             # 2. to handle "trickle ICE" for non-local ICE candidates (might be unnecessary)
             elif data['type'] == 'candidate':
-                logging.INFO("Received ICE candidate")
+                logging.info("Received ICE candidate")
                 candidate = data['candidate']
                 await pc.addIceCandidate(candidate)
 
             elif data['type'] == 'quit': # NOT initiator, received quit request from worker
-                logging.INFO("Worker has quit. Closing connection...")
+                logging.info("Worker has quit. Closing connection...")
                 await clean_exit(pc, websocket)
                 break
 
@@ -83,7 +83,7 @@ async def run_client(pc, peer_id: str, port_number: str):
     """
 
     channel = pc.createDataChannel("my-data-channel")
-    logging.INFO("channel(%s) %s" % (channel.label, "created by local party."))
+    logging.info("channel(%s) %s" % (channel.label, "created by local party."))
 
     async def send_client_messages():
         """Handles typed messages from client to be sent to worker peer.
@@ -100,16 +100,16 @@ async def run_client(pc, peer_id: str, port_number: str):
         message = input("Enter message to send (or type 'quit' to exit): ")
 
         if message.lower() == "quit": # client is initiator, send quit request to worker
-            logging.INFO("Quitting...")
+            logging.info("Quitting...")
             await pc.close()
             return 
 
         if channel.readyState != "open":
-            logging.INFO(f"Data channel not open. Ready state is: {channel.readyState}")
+            logging.info(f"Data channel not open. Ready state is: {channel.readyState}")
             return 
         
         channel.send(message)
-        logging.INFO(f"Message sent to worker.")
+        logging.info(f"Message sent to worker.")
 
 
     @channel.on("open")
@@ -122,28 +122,28 @@ async def run_client(pc, peer_id: str, port_number: str):
 			None
         """
 
-        logging.INFO(f"{channel.label} is open")
+        logging.info(f"{channel.label} is open")
         await send_client_messages()
     
 
     @channel.on("message")
     async def on_message(message):
-        logging.INFO(f"Client received: {message}")
+        logging.info(f"Client received: {message}")
         await send_client_messages()
 
 
     @pc.on("iceconnectionstatechange")
     async def on_iceconnectionstatechange():
-        logging.INFO(f"ICE connection state is now {pc.iceConnectionState}")
+        logging.info(f"ICE connection state is now {pc.iceConnectionState}")
         if pc.iceConnectionState in ["connected", "completed"]:
-            logging.INFO("ICE connection established.")
+            logging.info("ICE connection established.")
             # connected_event.set()
         elif pc.iceConnectionState in ["failed", "disconnected"]:
-            logging.INFO("ICE connection failed/disconnected. Closing connection.")
+            logging.info("ICE connection failed/disconnected. Closing connection.")
             await clean_exit(pc, websocket)
             return
         elif pc.iceConnectionState == "closed":
-            logging.INFO("ICE connection closed.")
+            logging.info("ICE connection closed.")
             await clean_exit(pc, websocket)
             return
 
@@ -153,26 +153,26 @@ async def run_client(pc, peer_id: str, port_number: str):
     async with websockets.connect(f"ws://localhost:{port_number}") as websocket:
         # 1a. register the client with the signaling server
         await websocket.send(json.dumps({'type': 'register', 'peer_id': peer_id}))
-        logging.INFO(f"{peer_id} sent to signaling server for registration!")
+        logging.info(f"{peer_id} sent to signaling server for registration!")
 
         # 1b. query for available workers
         await websocket.send(json.dumps({'type': 'query'}))
         response = await websocket.recv()
         available_workers = json.loads(response)["peers"]
-        logging.INFO(f"Available workers: {available_workers}")
+        logging.info(f"Available workers: {available_workers}")
 
         # 1c. select a worker to connect to (will implement firebase auth later)
         target_worker = available_workers[0] if available_workers else None
-        logging.INFO(f"Selected worker: {target_worker}")
+        logging.info(f"Selected worker: {target_worker}")
 
         if not target_worker:
-            logging.INFO("No workers available")
+            logging.info("No workers available")
             return
         
         # 2. create and send SDP offer to worker peer
         await pc.setLocalDescription(await pc.createOffer())
         await websocket.send(json.dumps({'type': pc.localDescription.type, 'target': target_worker, 'sdp': pc.localDescription.sdp}))
-        logging.INFO('Offer sent to worker')
+        logging.info('Offer sent to worker')
 
         # 3. handle incoming messages from server (e.g. answer from worker)
         await handle_connection(pc, websocket)
@@ -187,8 +187,8 @@ if __name__ == "__main__":
     try: 
         asyncio.run(run_client(pc, "client1", port_number))
     except KeyboardInterrupt:
-        logging.INFO("KeyboardInterrupt: Exiting...")
+        logging.info("KeyboardInterrupt: Exiting...")
     finally:
-        logging.INFO("exited")
+        logging.info("exited")
 
     
