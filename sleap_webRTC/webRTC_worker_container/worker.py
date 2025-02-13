@@ -1,4 +1,5 @@
 import asyncio
+import subprocess
 import websockets
 import json
 from aiortc import RTCPeerConnection, RTCSessionDescription, RTCDataChannel
@@ -105,6 +106,19 @@ async def run_worker(pc, peer_id):
         async def on_message(message):
             # receive client message
             print(f"Worker received: {message}")
+
+            if message.lower() == "sleap-label": # TEST RECEIVING COMMMAND AND EXECUTING INSIDE DOCKER CONTAINER
+                print("Running SLEAP label command...")
+                try:
+                    result = subprocess.run(
+                        message, 
+                        capture_output=True,
+                        text=True,
+                        check=True,                        
+                    )
+                    print(result.stdout) # simple print for now
+                except:
+                    print("Error running SLEAP label command.")
 
             # if message.lower() == "quit":
             #     print("Quitting...")
