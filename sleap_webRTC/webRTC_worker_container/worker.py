@@ -8,7 +8,7 @@ import logging
 from aiortc import RTCPeerConnection, RTCSessionDescription, RTCDataChannel
 
 # setup logging
-logging.basicConfig(level=logging.info)
+logging.basicConfig(level=logging.INFO)
 
 
 async def clean_exit(pc, websocket):

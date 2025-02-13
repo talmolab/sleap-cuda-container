@@ -8,7 +8,7 @@ from aiortc import RTCPeerConnection, RTCSessionDescription, RTCDataChannel
 from websockets import WebSocketClientProtocol
 
 # setup logging
-logging.basicConfig(level=logging.info)
+logging.basicConfig(level=logging.INFO)
 
 async def clean_exit(pc, websocket):
     logging.info("Closing WebRTC connection...")
