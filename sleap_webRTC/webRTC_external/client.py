@@ -1,6 +1,7 @@
 import asyncio
 import websockets
 import json
+import logging
 
 from aiortc import RTCPeerConnection, RTCSessionDescription, RTCDataChannel
 from websockets import WebSocketClientProtocol
@@ -127,15 +128,7 @@ async def run_client(pc, peer_id: str):
     @channel.on("message")
     async def on_message(message):
         print(f"Client received: {message}")
-        # if message.lower() == "quit":
-        #     print("Quitting")
-        #     return
-        
         await send_client_messages()
-
-        # asyncio.create_task(send_receive_messages(data_channel))
-        # data_channel_open_event.set()
-        # print(data_channel_open_event)
 
 
     @pc.on("iceconnectionstatechange")
@@ -185,47 +178,7 @@ async def run_client(pc, peer_id: str):
 
     await pc.close()
     await websocket.close()
-
-
-
-        # connected_event = asyncio.Event()
-        # data_channel_open_event = asyncio.Event()
-        
-        # new
-        # print(pc.iceConnectionState) 
     
-                # connected_event.set()
-
-        # @pc.on("icecandidate")
-        # async def on_icecandidate(candidate):
-        #     if candidate:
-        #         await websocket.send(json.dumps({'type': 'candidate', 'candidate': candidate}))
-        
-
-        
-
-        # @pc.on("datachannel")
-        # def on_data_channel(channel):
-        #     @channel.on("message")
-        #     async def on_message(message):
-        #         print(f"Client received: {message}")
-        #         print("on_message")
-        
-        # await asyncio.gather(connected_event.wait(), data_channel_open_event.wait())
-
-        # if pc.iceConnectionState in ["failed", "disconnected"]:
-        #     print("ICE connection failed or disconnected. Closing connection.")
-        #     return
-
-        # send a message to the worker via the data channel
-        # await data_channel.send("Hello, worker! I am the from client.")
-
-        # try:
-        #     await asyncio.sleep(3600)
-        # except asyncio.CancelledError:
-        #     print("Client connection closed.")
-        # finally:
-        #     await pc.close()
 
 if __name__ == "__main__":
     pc = RTCPeerConnection()

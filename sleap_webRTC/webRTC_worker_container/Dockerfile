@@ -26,7 +26,7 @@ EXPOSE 8080
 # Signaling server -> worker -> client in sequenece
 # Worker makes req to signaling server, signaling server sends offer to client and accepts offer
 # Connection is established between client and worker
-CMD ["sh", "-c", "python3 /app/worker.py"]
+ENTRYPOINT ["sh", "-c", "python3 /app/worker.py"]
 
 
 

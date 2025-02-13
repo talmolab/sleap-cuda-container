@@ -6,7 +6,7 @@ on:
     branches:
       - main
     paths:
-      - sleap_webRTC/** # Only run on changes to sleap_vscode_tunnel
+      - sleap_webRTC/** # Only run on changes to sleap_webRTC
       - .github/workflows/sleap_webrtc_production.yml # Only run on changes to this workflow
 
 
@@ -46,11 +46,11 @@ jobs:
         with:
           driver: docker-container # Use a container driver for Buildx (default)
           
-      # Step 5: Authenticate to GitHub Container Registry
+      # Authenticate to GitHub Container Registry
       - name: Authenticate to GitHub Container Registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-      # Step 6: Build and push the Docker image to GitHub Container Registry
+      # Build and push the Docker image to GitHub Container Registry
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:

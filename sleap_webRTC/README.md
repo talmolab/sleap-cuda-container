@@ -1,4 +1,4 @@
-# sleap-cuda
+# sleap-webRTC
 
 
 ## Description

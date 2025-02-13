@@ -6,7 +6,7 @@ on:
     branches-ignore:
       - main
     paths:
-      - sleap_webRTC/** # Only run on changes to sleap_vscode_tunnel
+      - sleap_webRTC/** # Only run on changes to sleap_webRTC
       - .github/workflows/sleap_webrtc_test.yml # Only run on changes to this workflow
 
 jobs:
