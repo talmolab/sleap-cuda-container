@@ -5,6 +5,9 @@ import logging
 
 from aiortc import RTCPeerConnection, RTCSessionDescription
 
+# setup logging
+logging.basicConfig(level=logging.info)
+
 # key: peer_id, value: specific peer websocket 
 connected_peers = {} 
 
