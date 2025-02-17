@@ -36,18 +36,18 @@ async def handle_connection(pc: RTCPeerConnection, websocket):
             data = json.loads(message)
 
             # 1. receive answer SDP from worker and set it as this peer's remote description
-            if data['type'] == 'answer':
+            if data.get('type') == 'answer':
                 print(f"Received answer from worker: {data}")
 
-                await pc.setRemoteDescription(RTCSessionDescription(sdp=data['sdp'], type=data['type']))
+                await pc.setRemoteDescription(RTCSessionDescription(sdp=data.get('sdp'), type=data.get('type')))
 
             # 2. to handle "trickle ICE" for non-local ICE candidates (might be unnecessary)
-            elif data['type'] == 'candidate':
+            elif data.get('type') == 'candidate':
                 print("Received ICE candidate")
-                candidate = data['candidate']
+                candidate = data.get('candidate')
                 await pc.addIceCandidate(candidate)
 
-            elif data['type'] == 'quit': # NOT initiator, received quit request from worker
+            elif data.get('type') == 'quit': # NOT initiator, received quit request from worker
                 print("Worker has quit. Closing connection...")
                 await clean_exit(pc, websocket)
                 break

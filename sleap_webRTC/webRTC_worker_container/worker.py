@@ -37,25 +37,25 @@ async def handle_connection(pc, websocket):
             data = json.loads(message)
             
             # 1. receieve offer SDP from client (forwarded by signaling server)
-            if data['type'] == "offer":
+            if data.get('type') == "offer":
                 # 1a. set worker peer's remote description to the client's offer based on sdp data
                 print('Received offer SDP')
 
-                await pc.setRemoteDescription(RTCSessionDescription(sdp=data['sdp'], type='offer')) 
+                await pc.setRemoteDescription(RTCSessionDescription(sdp=data.get('sdp'), type='offer')) 
                 
                 # 1b. generate worker's answer SDP and set it as the local description
                 await pc.setLocalDescription(await pc.createAnswer())
                 
                 # 1c. send worker's answer SDP to client so they can set it as their remote description
-                await websocket.send(json.dumps({'type': pc.localDescription.type, 'target': data['target'], 'sdp': pc.localDescription.sdp}))
+                await websocket.send(json.dumps({'type': pc.localDescription.type, 'target': data.get('target'), 'sdp': pc.localDescription.sdp}))
             
             # 2. to handle "trickle ICE" for non-local ICE candidates (might be unnecessary)
-            elif data['type'] == 'candidate':
+            elif data.get('type') == 'candidate':
                 print("Received ICE candidate")
-                candidate = data['candidate']
+                candidate = data.get('candidate')
                 await pc.addIceCandidate(candidate)
 
-            elif data['type'] == 'quit': # NOT initiator, received quit request from worker
+            elif data.get('type') == 'quit': # NOT initiator, received quit request from worker
                 print("Received quit request from Client. Closing connection...")
                 await clean_exit(pc, websocket)
                 return
