@@ -1,7 +1,12 @@
 import asyncio
 import websockets
 import json
+import logging 
+
 from aiortc import RTCPeerConnection, RTCSessionDescription
+
+# setup logging
+logging.basicConfig(level=logging.INFO)
 
 # key: peer_id, value: specific peer websocket 
 connected_peers = {} 
@@ -30,14 +35,14 @@ async def handle_client(websocket):
         async for message in websocket:
             try:
                 data = json.loads(message)
-                print(f"Received message: {data}")
+                logging.info(f"Received message: {data}")
 
                 if data.get('type') == "register":
                     # formatted as "register:peer_id"
                     peer_id = data.get('peer_id')
                     # add peer_id to connected_peers dictionary & update server terminal
                     connected_peers[peer_id] = websocket
-                    print(f"Registered peer: {peer_id}")
+                    logging.info(f"Registered peer: {peer_id}")
                                     
                 elif data.get('type') == "query":
                     # send available peers to client terminal via websocket
@@ -53,10 +58,10 @@ async def handle_client(websocket):
                     # if target_peer_id exists, send message to target_peer_id
                     # update server terminal
                     if target_websocket:
-                        print(f"Forwarding message from {peer_id} to {target_peer_id}")
+                        logging.info(f"Forwarding message from {peer_id} to {target_peer_id}")
                         await target_websocket.send(json.dumps(data))
                     else:
-                        print(f"Peer not found: {target_peer_id}")
+                        logging.info(f"Peer not found: {target_peer_id}")
 
                 elif data.get('type') == "answer":
                     # hardcoded for now
@@ -66,25 +71,25 @@ async def handle_client(websocket):
                     # if target_peer_id exists, send message to target_peer_id
                     # update server terminal
                     if target_websocket:
-                        print(f"Forwarding message from {peer_id} to {target_peer_id}")
+                        logging.info(f"Forwarding message from {peer_id} to {target_peer_id}")
                         await target_websocket.send(json.dumps(data))
                     else:
-                        print(f"Peer not found: {target_peer_id}")
+                        logging.info(f"Peer not found: {target_peer_id}")
 
             except json.JSONDecodeError:
-                print("Invalid JSON received")
+                logging.info("Invalid JSON received")
 
     except websockets.exceptions.ConnectionClosedOK:
-        print("Client disconnected cleanly.")
+        logging.info("Client disconnected cleanly.")
     
     except Exception as e:
-        print(f"Error handling client: {e}")
+        logging.info(f"Error handling client: {e}")
     
     finally:
         if peer_id:
             # disconnect the peer
             del connected_peers[peer_id]
-            print(f"Peer disconnected: {peer_id}")
+            logging.info(f"Peer disconnected: {peer_id}")
         
 async def main():
     """Main function to run server indefinitely.
@@ -104,7 +109,7 @@ async def main():
 
     async with websockets.serve(handle_client, "localhost", 8080):
         # run server indefinitely
-        print("Server started!")
+        logging.info("Server started!")
         await asyncio.Future()
 
 if __name__ == "__main__":

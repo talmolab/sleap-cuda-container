@@ -2,14 +2,14 @@
 
 
 ## Description
-This repo contains a DockerFile for a lightweight container (~2.79 GB) with the PyPI installation of SLEAP and all of its dependencies. The container repository is located at [https://hub.docker.com/repository/docker/eberrigan/sleap-cuda/general](https://hub.docker.com/repository/docker/eberrigan/sleap-cuda/general).
+This repo contains a DockerFile for a lightweight container (~6 GB) with the PyPI installation of SLEAP and all of its dependencies. The container repository is located at [https://hub.docker.com/repository/docker/eberrigan/sleap-cuda/general](https://hub.docker.com/repository/docker/eberrigan/sleap-cuda/general).
 
 The base image used is [nvidia/cuda:11.3.1-cudnn8-runtime-ubuntu20.04](https://hub.docker.com/layers/nvidia/cuda/11.3.1-cudnn8-runtime-ubuntu20.04/images/sha256-025a321d3131b688f4ac09d80e9af6221f2d1568b4f9ea6e45a698beebb439c0).
-- The Dockerfile is located at `docker/Dockerfile`.
+- The Dockerfile is located at `./sleap_webRTC/webRTC_worker_container/Dockerfile`.
 - The repo has CI set up in `.github/workflows` for building and pushing the image when making changes.
   - The workflow uses the linux/amd64 platform to build. 
 - `.devcontainer/devcontainer.json` is convenient for developing inside a container made with the DockerFile using Visual Studio Code.
-- Test data for training is located in `tests/data`.
+- Test data for training is located in `tests/sleap_webRTC`.
 
 
 ## Installation
@@ -126,3 +126,4 @@ contact Elizabeth at eberrigan@salk.edu
    - mamba activate sleap-webrtc to activate conda env every time
    - python3 sleap_webRTC\webRTC_external\client.py
 4. send messages between client and worker
+   - "quit" to exit
