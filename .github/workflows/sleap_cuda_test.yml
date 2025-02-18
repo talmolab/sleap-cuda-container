@@ -14,8 +14,8 @@ jobs:
     runs-on: ubuntu-latest # Only build on Ubuntu for now since Docker is not available on macOS runners
     strategy:
       matrix:
-        platform: [linux/amd64] # Only build amd64 for now
-      max-parallel: 2  # Build both architectures in parallel (if more than one)
+        platform: [linux/amd64, linux/arm64] # Build for both x86_64 and ARM64
+      max-parallel: 2  # Build both architectures in parallel
     outputs:
       git_sha: ${{ steps.get_sha.outputs.sha }}
       sanitized_platform: ${{ steps.sanitize_platform.outputs.sanitized_platform }}
