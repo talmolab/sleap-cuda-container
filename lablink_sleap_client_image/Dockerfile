@@ -77,8 +77,8 @@ USER ${USERNAME}
 WORKDIR /home/${USERNAME}
 
 # Pip install client service package
-RUN pip install --upgrade pip
-RUN pip install lablink-client-service
+RUN python3 -m pip install --upgrade pip
+RUN python3 -m pip install lablink-client-service
 
 # Copy the startup script
 COPY start.sh /home/${USERNAME}/start.sh
