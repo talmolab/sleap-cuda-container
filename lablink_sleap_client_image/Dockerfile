@@ -1,6 +1,6 @@
 # Base image with SLEAP and GPU support
 # https://hub.docker.com/repository/docker/eberrigan/sleap-cuda/general
-FROM eberrigan/sleap-cuda:latest
+FROM ghcr.io/talmolab/sleap-cuda:linux-amd64-2a8cefd7d0291d2ce07998fa3c54c9d0d618d31b
 
 # https://askubuntu.com/questions/1402167/must-specify-the-user-name-option-when-running-as-root-chrome-remote-desktop
 # Must be a non-root user to run Chrome Remote Desktop
@@ -35,9 +35,9 @@ RUN apt-get update && apt-get install -y \
     # Dummy X server for headless environments
     xserver-xorg-video-dummy \
     # Supports session management and terminal multiplexers
-    libutempter0 \  
+    libutempter0 \
     # Enables secure communication and package verification
-    gnupg2 \             
+    gnupg2 \
     # Allows running commands as root
     sudo \
     # For cloning repositories and managing code
@@ -76,15 +76,9 @@ RUN chmod -R a+w /usr/local/lib/python3.8/dist-packages
 USER ${USERNAME}
 WORKDIR /home/${USERNAME}
 
-# Create scripts directory with miniforge, uv, and nvm installation scripts
-COPY install_miniforge.sh /scripts/
-
-# Make scripts executable and run them
-RUN sudo chmod +x /scripts/*.sh && \
-    /scripts/install_miniforge.sh
-
 # Pip install client service package
-RUN /home/${USERNAME}/miniforge3/bin/conda run -n base pip install lablink-client-service
+RUN pip install --upgrade pip
+RUN pip install lablink-client-service
 
 # Copy the startup script
 COPY start.sh /home/${USERNAME}/start.sh
