@@ -74,8 +74,15 @@ RUN chmod -R a+w /usr/local/lib/python3.8/dist-packages
 USER ${USERNAME}
 WORKDIR /home/${USERNAME}
 
+# Create scripts directory with miniforge, uv, and nvm installation scripts
+COPY install_miniforge.sh /scripts/
+
+# Make scripts executable and run them
+RUN sudo chmod +x /scripts/*.sh && \
+    /scripts/install_miniforge.sh
+
 # Pip install client service package
-RUN pip install --no-cache-dir lablink-client-service
+RUN /home/${USERNAME}/miniforge3/bin/conda run -n base pip install lablink-client-service
 
 # Copy the startup script
 COPY start.sh /home/${USERNAME}/start.sh
