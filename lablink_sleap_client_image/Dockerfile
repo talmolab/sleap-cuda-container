@@ -4,7 +4,7 @@ FROM eberrigan/sleap-cuda:latest
 
 # https://askubuntu.com/questions/1402167/must-specify-the-user-name-option-when-running-as-root-chrome-remote-desktop
 # Must be a non-root user to run Chrome Remote Desktop
-ARG USERNAME="tutorial"
+ARG USERNAME="client"
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Update package lists and install necessary packages for Chrome Remote Desktop (CRD) setup
@@ -89,4 +89,4 @@ COPY start.sh /home/${USERNAME}/start.sh
 RUN sudo chmod +x /home/${USERNAME}/start.sh
 
 # Entrypoint included since opening terminal is needed to authorize connect of the remote computer to your Google Chrome account. 
-CMD ["/home/${USERNAME}/start.sh"]
+CMD ["/home/client/start.sh"]
