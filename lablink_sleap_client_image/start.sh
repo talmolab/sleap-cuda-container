@@ -6,6 +6,7 @@ echo "ALLOCATOR_HOST: $ALLOCATOR_HOST"
 echo "TUTORIAL_REPO_TO_CLONE: $TUTORIAL_REPO_TO_CLONE"
 
 if [ -n "$TUTORIAL_REPO_TO_CLONE" ]; then
+  mkdir -p /home/client/Desktop
   cd /home/client/Desktop
   echo "Cloning repository $TUTORIAL_REPO_TO_CLONE..."
   sudo -u client git clone "$TUTORIAL_REPO_TO_CLONE"
