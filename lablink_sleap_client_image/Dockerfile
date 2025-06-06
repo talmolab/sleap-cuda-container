@@ -72,12 +72,12 @@ RUN usermod -aG chrome-remote-desktop ${USERNAME}
 # Relax permissions on Python site-packages so that packages can write.
 RUN chmod -R a+w /usr/local/lib/python3.8/dist-packages
 
+# Pip install client service package
+RUN python3 -m pip install lablink-client-service
+
 # Switch to non-root user for Google Chrome Remote Desktop to work.
 USER ${USERNAME}
 WORKDIR /home/${USERNAME}
-
-# Pip install client service package
-RUN python3 -m pip install --user lablink-client-service
 
 # Copy the startup script
 COPY start.sh /home/${USERNAME}/start.sh
