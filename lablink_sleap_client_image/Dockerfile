@@ -39,7 +39,9 @@ RUN apt-get update && apt-get install -y \
     # Enables secure communication and package verification
     gnupg2 \             
     # Allows running commands as root
-    sudo \               
+    sudo \
+    # For cloning repositories and managing code
+    git \
     # Clean up unnecessary files to reduce image size
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
