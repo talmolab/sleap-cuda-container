@@ -4,7 +4,6 @@ echo "Starting the lablink sleap client container..."
 
 echo "ALLOCATOR_HOST: $ALLOCATOR_HOST"
 echo "TUTORIAL_REPO_TO_CLONE: $TUTORIAL_REPO_TO_CLONE"
-echo "ALLOCATOR_PORT: $ALLOCATOR_PORT"
 
 if [ -n "$TUTORIAL_REPO_TO_CLONE" ]; then
   mkdir -p /home/client/Desktop
@@ -24,7 +23,7 @@ fi
 echo "Running subscribe script..."
 
 # Activate the conda environment and run the subscribe script
-subscribe allocator.host=$ALLOCATOR_HOST allocator.port=$ALLOCATOR_PORT
+subscribe allocator.host=$ALLOCATOR_HOST allocator.port=80
 
 # Keep the container alive
 tail -f /dev/null
