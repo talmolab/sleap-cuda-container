@@ -1,10 +1,13 @@
 # Base image with SLEAP and GPU support
-# https://hub.docker.com/repository/docker/eberrigan/sleap-cuda/general
-FROM eberrigan/sleap-cuda:latest
+FROM ghcr.io/talmolab/sleap-cuda:latest
+
+LABEL org.opencontainers.image.description="Docker image for running SLEAP with Chrome Remote Desktop support. Based on the SLEAP image with GPU support using CUDA for amd64."
 
 # https://askubuntu.com/questions/1402167/must-specify-the-user-name-option-when-running-as-root-chrome-remote-desktop
 # Must be a non-root user to run Chrome Remote Desktop
 ARG USERNAME="tutorial"
+
+# Non-interactive mode for package installation
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Update package lists and install necessary packages for Chrome Remote Desktop (CRD) setup
