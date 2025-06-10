@@ -23,7 +23,7 @@ fi
 echo "Running subscribe script..."
 
 # Activate the conda environment and run the subscribe script
-subscribe allocator.host=$ALLOCATOR_HOST
+subscribe allocator.host=$ALLOCATOR_HOST allocator.port=80
 
 # Keep the container alive
 tail -f /dev/null
