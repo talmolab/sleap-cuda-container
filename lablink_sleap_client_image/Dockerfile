@@ -84,10 +84,6 @@ RUN python3 -m pip install lablink-client-service
 RUN apt-get update && apt-get install -y chromium-browser \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-RUN wget -q -O /usr/share/keyrings/google-linux-signing-key.gpg https://dl.google.com/linux/linux_signing_key.pub && \
-    echo "deb [arch=amd64 signed-by=/usr/share/keyrings/google-linux-signing-key.gpg] http://dl.google.com/linux/chrome/deb/ stable main" \
-    > /etc/apt/sources.list.d/google-chrome.list
-
 # Switch to non-root user for Google Chrome Remote Desktop to work.
 USER ${USERNAME}
 WORKDIR /home/${USERNAME}
@@ -96,6 +92,11 @@ WORKDIR /home/${USERNAME}
 RUN sudo apt-get update && \
     sudo apt-get install -y firefox && \
     sudo rm -rf /var/lib/apt/lists/*
+
+# Install Google Chrome
+RUN curl -L -o google-chrome-stable_current_amd64.deb \
+    https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && \
+    sudo apt install --assume-yes --fix-broken ./google-chrome-stable_current_amd64.deb
 
 # Copy the startup script
 COPY start.sh /home/${USERNAME}/start.sh
