@@ -85,10 +85,14 @@ RUN curl -L -o google-chrome-stable_current_amd64.deb \
     https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && \
     apt install --assume-yes --fix-broken ./google-chrome-stable_current_amd64.deb
 
-
 # Switch to non-root user for Google Chrome Remote Desktop to work.
 USER ${USERNAME}
 WORKDIR /home/${USERNAME}
+
+# Install Firefox
+RUN apt-get update && \
+    apt-get install -y firefox && \
+    rm -rf /var/lib/apt/lists/*
 
 # Copy the startup script
 COPY start.sh /home/${USERNAME}/start.sh
