@@ -90,9 +90,9 @@ USER ${USERNAME}
 WORKDIR /home/${USERNAME}
 
 # Install Firefox
-RUN apt-get update && \
-    apt-get install -y firefox && \
-    rm -rf /var/lib/apt/lists/*
+RUN sudo apt-get update && \
+    sudo apt-get install -y firefox && \
+    sudo rm -rf /var/lib/apt/lists/*
 
 # Copy the startup script
 COPY start.sh /home/${USERNAME}/start.sh
