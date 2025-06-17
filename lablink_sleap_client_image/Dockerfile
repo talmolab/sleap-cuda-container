@@ -80,6 +80,10 @@ RUN chmod -R a+w /usr/local/lib/python3.8/dist-packages
 # Pip install client service package
 RUN python3 -m pip install lablink-client-service
 
+# Install Chromium browser for web browsing capabilities
+RUN apt-get update && apt-get install -y chromium-browser \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
 # Switch to non-root user for Google Chrome Remote Desktop to work.
 USER ${USERNAME}
 WORKDIR /home/${USERNAME}
