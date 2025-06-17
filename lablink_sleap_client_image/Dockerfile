@@ -79,6 +79,11 @@ RUN python3 -m pip install lablink-client-service
 USER ${USERNAME}
 WORKDIR /home/${USERNAME}
 
+# Install Firefox
+RUN sudo apt-get update && \
+    sudo apt-get install -y firefox && \
+    sudo rm -rf /var/lib/apt/lists/*
+
 # Copy the startup script
 COPY start.sh /home/${USERNAME}/start.sh
 RUN sudo chmod +x /home/${USERNAME}/start.sh
