@@ -80,11 +80,6 @@ RUN chmod -R a+w /usr/local/lib/python3.8/dist-packages
 # Pip install client service package
 RUN python3 -m pip install lablink-client-service
 
-# Install Google Chrome
-RUN curl -L -o google-chrome-stable_current_amd64.deb \
-    https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && \
-    apt install --assume-yes --fix-broken ./google-chrome-stable_current_amd64.deb
-
 # Switch to non-root user for Google Chrome Remote Desktop to work.
 USER ${USERNAME}
 WORKDIR /home/${USERNAME}
@@ -93,6 +88,11 @@ WORKDIR /home/${USERNAME}
 RUN sudo apt-get update && \
     sudo apt-get install -y firefox && \
     sudo rm -rf /var/lib/apt/lists/*
+
+# Install Google Chrome
+RUN curl -L -o google-chrome-stable_current_amd64.deb \
+    https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && \
+    sudo apt install --assume-yes --fix-broken ./google-chrome-stable_current_amd64.deb
 
 # Copy the startup script
 COPY start.sh /home/${USERNAME}/start.sh
