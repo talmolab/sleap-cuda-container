@@ -42,11 +42,6 @@ RUN apt-get update && apt-get install -y \
     sudo \
     # For cloning repositories and managing code
     git \
-    # Chrome Browser dependencies
-    fonts-liberation \
-    libasound2 \
-    wget \
-    xdg-utils \
     # Clean up unnecessary files to reduce image size
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
@@ -92,11 +87,6 @@ WORKDIR /home/${USERNAME}
 RUN sudo apt-get update && \
     sudo apt-get install -y firefox && \
     sudo rm -rf /var/lib/apt/lists/*
-
-# Install Google Chrome
-RUN curl -L -o google-chrome-stable_current_amd64.deb \
-    https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && \
-    sudo apt install --assume-yes --fix-broken ./google-chrome-stable_current_amd64.deb
 
 # Copy the startup script
 COPY start.sh /home/${USERNAME}/start.sh
