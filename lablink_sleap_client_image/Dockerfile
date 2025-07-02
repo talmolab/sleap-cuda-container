@@ -95,7 +95,7 @@ RUN curl -L -o google-chrome-stable_current_amd64.deb \
     rm google-chrome-stable_current_amd64.deb
 
 # Configure Chrome sandbox permissions
-RUN chmod 4755 /opt/google/chrome/chrome-sandbox
+RUN sudo chmod 4755 /opt/google/chrome/chrome-sandbox
 
 # Copy the startup script
 COPY start.sh /home/${USERNAME}/start.sh
