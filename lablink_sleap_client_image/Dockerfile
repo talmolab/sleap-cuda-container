@@ -42,6 +42,10 @@ RUN apt-get update && apt-get install -y \
     sudo \
     # For cloning repositories and managing code
     git \
+    # For Google Chrome
+    wget \
+    xdg-utils \
+    fonts-liberation \
     # Clean up unnecessary files to reduce image size
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
