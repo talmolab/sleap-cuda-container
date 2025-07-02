@@ -42,7 +42,6 @@ RUN apt-get update && apt-get install -y \
     sudo \
     # For cloning repositories and managing code
     git \
-    wget \
     # Clean up unnecessary files to reduce image size
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
@@ -86,14 +85,13 @@ RUN sudo apt-get update && \
     sudo rm -rf /var/lib/apt/lists/*
 
 # Install Google Chrome
-RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | \
-    gpg --no-default-keyring --keyring gnupg-ring:/etc/apt/trusted.gpg.d/google.gpg --import; \
-    chmod 644 /etc/apt/trusted.gpg.d/google.gpg; \
-    echo "deb http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list
-
-RUN curl -LO https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && \
-    apt-get install -y ./google-chrome-stable_current_amd64.deb && \
+RUN curl -L -o google-chrome-stable_current_amd64.deb \
+    https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && \
+    apt install --assume-yes --fix-broken ./google-chrome-stable_current_amd64.deb && \
     rm google-chrome-stable_current_amd64.deb
+
+# Configure Chrome sandbox permissions
+RUN chmod 4755 /opt/google/chrome/chrome-sandbox
 
 # Copy the startup script
 COPY start.sh /home/${USERNAME}/start.sh
