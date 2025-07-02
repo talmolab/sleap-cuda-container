@@ -87,7 +87,7 @@ RUN sudo apt-get update && \
 # Install Google Chrome
 RUN curl -L -o google-chrome-stable_current_amd64.deb \
     https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && \
-    apt install --assume-yes --fix-broken ./google-chrome-stable_current_amd64.deb && \
+    sudo apt install --assume-yes --fix-broken ./google-chrome-stable_current_amd64.deb && \
     rm google-chrome-stable_current_amd64.deb
 
 # Configure Chrome sandbox permissions
