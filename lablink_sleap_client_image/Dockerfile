@@ -104,10 +104,6 @@ RUN python3 -m pip install lablink-client-service
 USER ${USERNAME}
 WORKDIR /home/${USERNAME}
 
-# Configure Chrome to run without sandboxing
-RUN echo '#!/bin/bash\nexec /opt/google/chrome/google-chrome --no-sandbox "$@"' > /usr/local/bin/google-chrome && \
-    sudo chmod +x /usr/local/bin/google-chrome
-
 # Copy the startup script
 COPY start.sh /home/${USERNAME}/start.sh
 RUN sudo chmod +x /home/${USERNAME}/start.sh
