@@ -24,7 +24,7 @@ fi
 echo "Running subscribe script..."
 
 # Activate the conda environment and run the subscribe script
-subscribe allocator.host=$ALLOCATOR_HOST allocator.port=80 client.software=$SUBJECT_SOFTWARE &
+subscribe allocator.host=$ALLOCATOR_HOST allocator.port=80 &
 
 # Wait for the subscribe script to start
 sleep 5
