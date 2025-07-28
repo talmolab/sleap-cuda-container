@@ -4,6 +4,7 @@ echo "Starting the lablink sleap client container..."
 
 echo "ALLOCATOR_HOST: $ALLOCATOR_HOST"
 echo "TUTORIAL_REPO_TO_CLONE: $TUTORIAL_REPO_TO_CLONE"
+echo "SUBJECT_SOFTWARE: $SUBJECT_SOFTWARE"
 
 if [ -n "$TUTORIAL_REPO_TO_CLONE" ]; then
   mkdir -p /home/client/Desktop
@@ -23,7 +24,19 @@ fi
 echo "Running subscribe script..."
 
 # Activate the conda environment and run the subscribe script
-subscribe allocator.host=$ALLOCATOR_HOST allocator.port=80
+subscribe allocator.host=$ALLOCATOR_HOST allocator.port=80 &
+
+# Wait for the subscribe script to start
+sleep 5
+
+# Run update_inuse_status
+update_inuse_status allocator.host=$ALLOCATOR_HOST allocator.port=80 client.software=$SUBJECT_SOFTWARE &
+
+# Wait for the subscribe script to start
+sleep 5
+
+# Run GPU health check
+check_gpu allocator.host=$ALLOCATOR_HOST allocator.port=80 &
 
 # Keep the container alive
 tail -f /dev/null

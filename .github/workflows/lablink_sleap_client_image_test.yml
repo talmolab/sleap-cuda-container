@@ -1,4 +1,4 @@
-name: Build and Push sleap-chrome-remote-desktop (Test Workflow)
+name: Build and Push lablink-sleap-client-image (Test Workflow)
 
 # Run on push to branches other than main for lablink_sleap_client_image
 on:
