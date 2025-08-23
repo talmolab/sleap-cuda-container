@@ -3,7 +3,7 @@
 FROM eberrigan/sleap-cuda:latest
 
 # Install required tools for VNC server
-RUN apt-get update && apt-get install -y --no-install-recommends \    
+RUN apt-get update && apt-get install -y --no-install-recommends --fix-broken \    
     xfce4 \
     xfce4-goodies \
     tightvncserver \
@@ -11,6 +11,24 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     xfonts-base \
     autocutsel \
     && rm -rf /var/lib/apt/lists/*
+
+RUN apt-get update && apt-get install -y --no-install-recommends --fix-broken\
+    '^libxcb.*-dev' \
+    libx11-xcb-dev \
+    libglu1-mesa-dev \
+    libxrender-dev \
+    libxi-dev \
+    libxkbcommon-dev \
+    libxkbcommon-x11-dev \
+    desktop-base \
+    xscreensaver \
+    xvfb \
+    xserver-xorg-video-dummy \
+    x11-xserver-utils \
+    x11-apps \
+    at-spi2-core \
+    xbase-clients && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Setup VNC server
 RUN mkdir /root/.vnc && \
