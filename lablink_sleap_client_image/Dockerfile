@@ -77,10 +77,10 @@ RUN echo "exec /etc/X11/Xsession /usr/bin/xfce4-session" > /etc/chrome-remote-de
 # Because there is no display connected to your instance, disable the display manager service on your instance
 RUN systemctl disable lightdm.service
 
-# Install Google Chrome
+# Install Chrome browser
 RUN curl -L -o google-chrome-stable_current_amd64.deb \
     https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && \
-    sudo apt install --assume-yes --fix-broken ./google-chrome-stable_current_amd64.deb && \
+    apt install --assume-yes --fix-broken ./google-chrome-stable_current_amd64.deb && \
     rm google-chrome-stable_current_amd64.deb
 
 # Configure Google Chrome to run without sandboxing
@@ -88,13 +88,13 @@ RUN curl -L -o google-chrome-stable_current_amd64.deb \
 # Create a directory for wrapper scripts
 RUN rm -f /usr/bin/google-chrome && \
     echo '#!/bin/bash' > /usr/bin/google-chrome && \
-    echo 'exec /opt/google/chrome/google-chrome --no-sandbox "$@"' >> /usr/bin/google-chrome && \
+    echo 'exec /opt/google/chrome/google-chrome --no-sandbox --disable-gpu --disable-software-rasterizer --disable-dev-shm-usage "$@"' >> /usr/bin/google-chrome && \
     chmod +x /usr/bin/google-chrome
 
 # Do the same for the stable version of Google Chrome
 RUN rm -f /usr/bin/google-chrome-stable && \
     echo '#!/bin/bash' > /usr/bin/google-chrome-stable && \
-    echo 'exec /opt/google/chrome/google-chrome --no-sandbox "$@"' >> /usr/bin/google-chrome-stable && \
+    echo 'exec /opt/google/chrome/google-chrome --no-sandbox --disable-gpu --disable-software-rasterizer --disable-dev-shm-usage "$@"' >> /usr/bin/google-chrome-stable && \
     chmod +x /usr/bin/google-chrome-stable
 
 # Create the user USERNAME
