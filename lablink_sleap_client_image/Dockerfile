@@ -50,14 +50,26 @@ RUN apt-get update && apt-get install -y \
     # Clean up unnecessary files to reduce image size
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install Chrome Remote Desktop
-RUN  curl https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /etc/apt/trusted.gpg.d/chrome-remote-desktop.gpg && \
-    # Add the Chrome Remote Desktop repository
-    echo "deb [arch=amd64] https://dl.google.com/linux/chrome-remote-desktop/deb stable main" > /etc/apt/sources.list.d/chrome-remote-desktop.list && \
-    # Update package lists and install Chrome Remote Desktop
-    apt-get update && apt-get install --assume-yes chrome-remote-desktop && \
-    # Clean up to reduce image size
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+# Install Chrome browser
+RUN curl -L -o google-chrome-stable_current_amd64.deb \
+    https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && \
+    apt install --assume-yes --fix-broken ./google-chrome-stable_current_amd64.deb && \
+    rm google-chrome-stable_current_amd64.deb \
+    && rm -rf /var/lib/apt/lists/*
+
+# Configure Google Chrome to run without sandboxing
+# This is necessary for Chrome Remote Desktop to work properly in a container environment.
+# Create a directory for wrapper scripts
+RUN rm -f /usr/bin/google-chrome && \
+    echo '#!/bin/bash' > /usr/bin/google-chrome && \
+    echo 'exec /opt/google/chrome/google-chrome --no-sandbox --disable-gpu --disable-software-rasterizer --disable-dev-shm-usage "$@"' >> /usr/bin/google-chrome && \
+    chmod +x /usr/bin/google-chrome
+
+# Do the same for the stable version of Google Chrome
+RUN rm -f /usr/bin/google-chrome-stable && \
+    echo '#!/bin/bash' > /usr/bin/google-chrome-stable && \
+    echo 'exec /opt/google/chrome/google-chrome --no-sandbox --disable-gpu --disable-software-rasterizer --disable-dev-shm-usage "$@"' >> /usr/bin/google-chrome-stable && \
+    chmod +x /usr/bin/google-chrome-stable
 
 # Configure Chrome Remote Desktop to use Xfce by default
 RUN echo "exec /etc/X11/Xsession /usr/bin/xfce4-session" > /etc/chrome-remote-desktop-session
