@@ -38,7 +38,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libgssapi-krb5-2 \
     libdbus-1-3 \
     libx11-xcb1 \
-    libxkbcommon-x11-0 \
+    libxkbcommon-x11-0 && \
     # python3-pip && \
     # python3 -m pip install --upgrade pip && \
     apt-get clean && \
