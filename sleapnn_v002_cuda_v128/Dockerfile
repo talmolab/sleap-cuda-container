@@ -56,7 +56,9 @@ RUN uv init --no-readme
 RUN uv venv --python 3.13
 
 # Set virtual environment path
-ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+ENV PATH="$VIRTUAL_ENV/bin:$PATH" \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PIP_NO_CACHE_DIR=1
 
 # # Add MarkupSafe from git
 RUN uv add git+https://github.com/pallets/markupsafe@3.0.2
