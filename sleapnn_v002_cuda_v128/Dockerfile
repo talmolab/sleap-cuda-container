@@ -26,6 +26,12 @@ ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 # opencv requires opengl https://github.com/conda-forge/opencv-feedstock/issues/401
 # Default python3 is 3.8 in ubuntu 20.04 https://wiki.ubuntu.com/FocalFossa/ReleaseNotes#Python3_by_default
+
+# Deadsnakes PPA for Python 3.11
+RUN add-apt-repository ppa:deadsnakes/ppa
+RUN apt update
+RUN apt install python3.11
+
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     # libgl1-mesa-glx \
@@ -38,7 +44,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libgssapi-krb5-2 \
     libdbus-1-3 \
     libx11-xcb1 \
-    python3.11\
     libxkbcommon-x11-0 && \
     # python3-pip && \
     # python3 -m pip install --upgrade pip && \
