@@ -58,9 +58,8 @@ RUN uv venv --python 3.13
 # Set virtual environment path
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-# # Add MarkupSafe from pypi
-# RUN uv add markupsafe==3.0.2
-
+# # Add MarkupSafe from git
+RUN uv add git+https://github.com/pallets/markupsafe@3.0.2
 
 # Install sleap-nn w/ CUDA 12.8 support
 RUN uv add "sleap-nn[torch-cuda128]" --index https://download.pytorch.org/whl/cu128 --index https://pypi.org/simple
