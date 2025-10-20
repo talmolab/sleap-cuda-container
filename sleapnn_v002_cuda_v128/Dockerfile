@@ -38,6 +38,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libgssapi-krb5-2 \
     libdbus-1-3 \
     libx11-xcb1 \
+    python3.13\
     libxkbcommon-x11-0 && \
     # python3-pip && \
     # python3 -m pip install --upgrade pip && \
@@ -52,6 +53,7 @@ RUN uv venv --python 3.13
 
 # # Add MarkupSafe from pypi
 # RUN uv add markupsafe==3.0.2
+
 
 # Install sleap-nn w/ CUDA 12.8 support
 RUN uv add "sleap-nn[torch-cuda128]" --index https://download.pytorch.org/whl/cu128 --index https://pypi.org/simple
