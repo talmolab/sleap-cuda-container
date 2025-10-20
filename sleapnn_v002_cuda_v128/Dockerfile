@@ -1,5 +1,5 @@
 # Base image with GPU support
-FROM nvidia/cuda:12.8.0-cudnn9-runtime-ubuntu24.04
+FROM nvidia/cuda:12.8.0-cudnn-runtime-ubuntu24.04
 
 # Set working directory
 WORKDIR /app
