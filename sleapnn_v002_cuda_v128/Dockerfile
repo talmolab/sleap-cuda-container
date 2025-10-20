@@ -1,5 +1,5 @@
 # Base image with GPU support
-FROM nvidia/cuda:12.8.0-cudnn-runtime-ubuntu24.04
+FROM nvidia/cuda:12.8.1-cudnn-devel-ubuntu24.04
 
 # Set working directory
 WORKDIR /app
@@ -19,19 +19,9 @@ ENV QT_DEBUG_PLUGINS=1
 # Set virtual environment
 ENV VIRTUAL_ENV=/app/.venv
 
-# Set virtual environment path
-ENV PATH="$VIRTUAL_ENV/bin:$PATH"
-
 # Install uv + dependencies
-COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 # opencv requires opengl https://github.com/conda-forge/opencv-feedstock/issues/401
 # Default python3 is 3.8 in ubuntu 20.04 https://wiki.ubuntu.com/FocalFossa/ReleaseNotes#Python3_by_default
-
-# Deadsnakes PPA for Python 3.11
-RUN add-apt-repository ppa:deadsnakes/ppa
-RUN apt update
-RUN apt install python3.11
-
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     # libgl1-mesa-glx \
@@ -44,17 +34,29 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libgssapi-krb5-2 \
     libdbus-1-3 \
     libx11-xcb1 \
-    libxkbcommon-x11-0 && \
+    libxkbcommon-x11-0 \
+    python3 \
+    python3-venv \
+    python3-pip \
+    git \
+    curl && \
     # python3-pip && \
     # python3 -m pip install --upgrade pip && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+# Install uv
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh \
+    && ln -s /root/.local/bin/uv /usr/local/bin/uv
+
 # Initialize uv project
 RUN uv init --no-readme
 
 # Create virtual env w/ Python 3.13
-RUN uv venv --python 3.11
+RUN uv venv --python 3.13
+
+# Set virtual environment path
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 # # Add MarkupSafe from pypi
 # RUN uv add markupsafe==3.0.2
