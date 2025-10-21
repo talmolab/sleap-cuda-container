@@ -67,4 +67,4 @@ RUN uv add git+https://github.com/pallets/markupsafe@3.0.2
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Install sleap-nn w/ CUDA 12.8 support
-RUN uv add "sleap-nn[torch-cuda128]" --index https://download.pytorch.org/whl/cu128 --index https://pypi.org/simple --no-cache
+RUN uv add sleap-nn[torch] --index https://download.pytorch.org/whl/cu128 --index https://pypi.org/simple --no-cache
