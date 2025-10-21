@@ -51,10 +51,10 @@ RUN curl -LsSf https://astral.sh/uv/install.sh | sh \
     && ln -s /root/.local/bin/uv /usr/local/bin/uv
 
 # Initialize uv project
-RUN uv init --no-readme
+RUN uv init --python 3.13 --no-readme
 
 # Create virtual env w/ Python 3.13
-RUN uv venv --python 3.13
+RUN uv venv
 
 # Set virtual environment path
 ENV PATH="$VIRTUAL_ENV/bin:$PATH" \
