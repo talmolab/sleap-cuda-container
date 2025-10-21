@@ -16,5 +16,6 @@ ENV NVIDIA_DRIVER_CAPABILITIES=all
 # Set QT debug environment variable to help debug issues with Qt plugins
 ENV QT_DEBUG_PLUGINS=1
 
-# Install sleap-nn w/ CUDA 12.8 support
-RUN uv add sleap[nn] --index https://download.pytorch.org/whl/cu128 --index https://pypi.org/simple --no-cache
+# Install SLEAP with GPU support for CUDA 12.8
+RUN uv add sleap[nn] --index https://download.pytorch.org/whl/cu128 --index https://pypi.org/simple --no-cache && \
+    uv sync
