@@ -1,6 +1,6 @@
 name: Build and Push sleap-nn-v002-cuda-production (Production Workflow)
 
-# Run on push to the main branch for sleapnn_v002_cuda_v128
+# Run on push to branches other than main for sleapnn_v002_cuda_v128
 on:
   push:
     branches:
