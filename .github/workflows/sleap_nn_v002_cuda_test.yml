@@ -71,6 +71,6 @@ jobs:
           # Tags all include "-test" to differentiate from production images
           tags: |
             ghcr.io/${{ github.repository_owner }}/sleap-nn-cuda:${{ steps.sanitize_platform.outputs.sanitized_platform }}-test
-            ghcr.io/${{ github.repository_owner }}/sleap-nn-cuda:${{ steps.sanitize_platform.outputs.sanitized_platform }}-nvidia-cuda-12.8.0-cudnn9-runtime-ubuntu24.04-test
+            ghcr.io/${{ github.repository_owner }}/sleap-nn-cuda:${{ steps.sanitize_platform.outputs.sanitized_platform }}-nvidia-cuda-12.8.0-cudnn-runtime-ubuntu24.04-test
             ghcr.io/${{ github.repository_owner }}/sleap-nn-cuda:${{ steps.sanitize_platform.outputs.sanitized_platform }}-sleap-nn-0.0.2-test
             ghcr.io/${{ github.repository_owner }}/sleap-nn-cuda:${{ steps.sanitize_platform.outputs.sanitized_platform }}-${{ steps.get_sha.outputs.sha }}-test

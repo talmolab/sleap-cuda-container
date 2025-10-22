@@ -1,4 +1,4 @@
-name: Build and Push sleap-nn-v002-cuda-production (Test Workflow)
+name: Build and Push sleap-nn-v002-cuda-production (Production Workflow)
 
 # Run on push to the main branch for sleapnn_v002_cuda_v128
 on:
@@ -58,10 +58,10 @@ jobs:
           file: ./sleapnn_v002_cuda_v128/Dockerfile # Path to Dockerfile wrt the root of the repository
           platforms: ${{ matrix.platform }}
           push: true # Push the image to GitHub Container Registry
-          # Tags all include "-production" to differentiate from production images
+          # Tags all include "-production" to differentiate from test images
           tags: |
             ghcr.io/${{ github.repository_owner }}/sleap-nn-cuda:latest
             ghcr.io/${{ github.repository_owner }}/sleap-nn-cuda:${{ steps.sanitize_platform.outputs.sanitized_platform }}
-            ghcr.io/${{ github.repository_owner }}/sleap-nn-cuda:${{ steps.sanitize_platform.outputs.sanitized_platform }}-nvidia-cuda-12.8.0-cudnn9-runtime-ubuntu24.04
+            ghcr.io/${{ github.repository_owner }}/sleap-nn-cuda:${{ steps.sanitize_platform.outputs.sanitized_platform }}-nvidia-cuda-12.8.0-cudnn-runtime-ubuntu24.04
             ghcr.io/${{ github.repository_owner }}/sleap-nn-cuda:${{ steps.sanitize_platform.outputs.sanitized_platform }}-sleap-nn-0.0.2
             ghcr.io/${{ github.repository_owner }}/sleap-nn-cuda:${{ steps.sanitize_platform.outputs.sanitized_platform }}-${{ steps.get_sha.outputs.sha }}
