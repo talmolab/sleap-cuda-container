@@ -1,0 +1,76 @@
+name: Build and Push sleap-nn-v002-cuda-test (Test Workflow)
+
+# Run on push to branches other than main for sleapnn_v002_cuda_v128
+on:
+  push:
+    branches-ignore:
+      - main
+    paths:
+      - sleapnn_v002_cuda_v128/** # Only run on changes to sleapnn_v002_cuda_v128
+      - .github/workflows/sleap_nn_v002_cuda_test.yml # Only run on changes to this workflow
+
+jobs:
+  build:
+    runs-on: ubuntu-latest # Only build on Ubuntu for now since Docker is not available on macOS runners
+    strategy:
+      matrix:
+        platform: [linux/amd64] # Only build amd64 for now
+      max-parallel: 2  # Build both architectures in parallel (if more than one)
+    outputs:
+      git_sha: ${{ steps.get_sha.outputs.sha }}
+      sanitized_platform: ${{ steps.sanitize_platform.outputs.sanitized_platform }}
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: Get Git SHA for tagging the image
+      - name: Get Git SHA
+        id: get_sha
+        run: echo "sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+
+      - name: Debug Git SHA
+        run: echo "Git SHA ${{ steps.get_sha.outputs.sha }}"
+
+      # Step 3: Sanitize platform name for tagging
+      - name: Sanitize platform name
+        id: sanitize_platform
+        run: |
+          sanitized_platform="${{ matrix.platform }}" # Copy platform value
+          sanitized_platform="${sanitized_platform/\//-}" # Replace / with -
+          echo "sanitized_platform=$sanitized_platform" >> $GITHUB_OUTPUT
+
+      # Step 4: Set up Docker Buildx for multi-architecture builds
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          driver: docker-container # Use a container driver for Buildx (default)
+
+      # Step 4.5: Free up disk space
+      - name: Free up disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/local/share/boost
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+          sudo docker system prune -af
+          df -h
+
+      # Step 5: Authenticate to GitHub Container Registry
+      - name: Authenticate to GitHub Container Registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      # Step 6: Build and push the Docker image to GitHub Container Registry
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./sleapnn_v002_cuda_v128 # Build context wrt the root of the repository
+          file: ./sleapnn_v002_cuda_v128/Dockerfile # Path to Dockerfile wrt the root of the repository
+          platforms: ${{ matrix.platform }}
+          push: true # Push the image to GitHub Container Registry
+          # Tags all include "-test" to differentiate from production images
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/sleap-nn-cuda:${{ steps.sanitize_platform.outputs.sanitized_platform }}-test
+            ghcr.io/${{ github.repository_owner }}/sleap-nn-cuda:${{ steps.sanitize_platform.outputs.sanitized_platform }}-nvidia-cuda-12.8.0-cudnn-runtime-ubuntu24.04-test
+            ghcr.io/${{ github.repository_owner }}/sleap-nn-cuda:${{ steps.sanitize_platform.outputs.sanitized_platform }}-sleap-nn-0.0.2-test
+            ghcr.io/${{ github.repository_owner }}/sleap-nn-cuda:${{ steps.sanitize_platform.outputs.sanitized_platform }}-${{ steps.get_sha.outputs.sha }}-test
