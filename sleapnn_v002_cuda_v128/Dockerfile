@@ -109,8 +109,7 @@ RUN curl -LsSf https://astral.sh/uv/install.sh | sh \
  && uv init --python 3.13 --no-readme \
  && uv venv \
  && export PATH="/app/.venv/bin:$PATH" \
- && pip install --upgrade pip \
- && pip install "MarkupSafe==3.0.2" \
+ && uv add "markupsafe==3.0.2" \
  && uv add "sleap-nn[torch]" --index https://download.pytorch.org/whl/cu128 --index https://pypi.org/simple --no-cache
 
 # Environment for virtualenv usage
