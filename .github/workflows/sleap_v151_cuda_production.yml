@@ -1,6 +1,5 @@
 name: Build and Push sleap-v151-cuda-v128 (Production Workflow)
 
-# Run on push to branches other than main for sleapnn_v002_cuda_v128
 on:
   push:
     branches:
@@ -66,7 +65,7 @@ jobs:
           file: ./sleap_v151_cuda_v128/Dockerfile # Path to Dockerfile wrt the root of the repository
           platforms: ${{ matrix.platform }}
           push: true # Push the image to GitHub Container Registry
-          # Tags all include "-production" to differentiate from production images
+          # Tags for production images
           tags: |
             ghcr.io/${{ github.repository_owner }}/sleap-v151-cuda:latest
             ghcr.io/${{ github.repository_owner }}/sleap-v151-cuda:${{ steps.sanitize_platform.outputs.sanitized_platform }}

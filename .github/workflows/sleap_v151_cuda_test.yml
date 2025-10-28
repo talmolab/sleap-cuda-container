@@ -1,6 +1,6 @@
 name: Build and Push sleap-v151-cuda-v128 (Test Workflow)
 
-# Run on push to branches other than main for sleapnn_v002_cuda_v128
+# Run on push to branches other than main for sleap_v151_cuda_v128
 on:
   push:
     branches-ignore:
