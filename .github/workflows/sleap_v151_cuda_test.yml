@@ -1,13 +1,13 @@
-name: Build and Push sleap-nn-v002-cuda-test (Test Workflow)
+name: Build and Push sleap-v151-cuda-v128 (Test Workflow)
 
-# Run on push to branches other than main for sleapnn_v002_cuda_v128
+# Run on push to branches other than main for sleap_v151_cuda_v128
 on:
   push:
     branches-ignore:
       - main
     paths:
-      - sleapnn_v002_cuda_v128/** # Only run on changes to sleapnn_v002_cuda_v128
-      - .github/workflows/sleap_nn_v002_cuda_test.yml # Only run on changes to this workflow
+      - sleap_v151_cuda_v128/** # Only run on changes to sleap_v151_cuda_v128
+      - .github/workflows/sleap_v151_cuda_test.yml # Only run on changes to this workflow
 
 jobs:
   build:
@@ -46,6 +46,16 @@ jobs:
         with:
           driver: docker-container # Use a container driver for Buildx (default)
 
+      # Step 4.5: Free up disk space
+      - name: Free up disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/local/share/boost
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+          sudo docker system prune -af
+          df -h
+
       # Step 5: Authenticate to GitHub Container Registry
       - name: Authenticate to GitHub Container Registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
@@ -54,13 +64,13 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
-          context: ./sleapnn_v002_cuda_v128 # Build context wrt the root of the repository
-          file: ./sleapnn_v002_cuda_v128/Dockerfile # Path to Dockerfile wrt the root of the repository
+          context: ./sleap_v151_cuda_v128 # Build context wrt the root of the repository
+          file: ./sleap_v151_cuda_v128/Dockerfile # Path to Dockerfile wrt the root of the repository
           platforms: ${{ matrix.platform }}
           push: true # Push the image to GitHub Container Registry
-          # Tags all include "-test" to differentiate from production images
+          # Tags all include "-production" to differentiate from production images
           tags: |
-            ghcr.io/${{ github.repository_owner }}/sleap-nn-cuda:${{ steps.sanitize_platform.outputs.sanitized_platform }}-test
-            ghcr.io/${{ github.repository_owner }}/sleap-nn-cuda:${{ steps.sanitize_platform.outputs.sanitized_platform }}-nvidia-cuda-12.8.0-cudnn-runtime-ubuntu24.04-test
-            ghcr.io/${{ github.repository_owner }}/sleap-nn-cuda:${{ steps.sanitize_platform.outputs.sanitized_platform }}-sleap-nn-0.0.2-test
-            ghcr.io/${{ github.repository_owner }}/sleap-nn-cuda:${{ steps.sanitize_platform.outputs.sanitized_platform }}-${{ steps.get_sha.outputs.sha }}-test
+            ghcr.io/${{ github.repository_owner }}/sleap-v151-cuda:${{ steps.sanitize_platform.outputs.sanitized_platform }}-test
+            ghcr.io/${{ github.repository_owner }}/sleap-v151-cuda:${{ steps.sanitize_platform.outputs.sanitized_platform }}-nvidia-cuda-12.8.0-cudnn9-runtime-ubuntu24.04-test
+            ghcr.io/${{ github.repository_owner }}/sleap-v151-cuda:${{ steps.sanitize_platform.outputs.sanitized_platform }}-sleap-1.5.1-test
+            ghcr.io/${{ github.repository_owner }}/sleap-v151-cuda:${{ steps.sanitize_platform.outputs.sanitized_platform }}-${{ steps.get_sha.outputs.sha }}-test
