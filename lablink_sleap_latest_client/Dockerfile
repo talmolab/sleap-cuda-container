@@ -15,4 +15,5 @@ RUN uv python install 3.11 \
  && uv pip install --python=/home/client/.venv/bin/python \
       'sleap[nn]==1.5.2' \
       --index https://download.pytorch.org/whl/cu128 \
-      --index https://pypi.org/simple
+      --index https://pypi.org/simple \
+      --no-cache
