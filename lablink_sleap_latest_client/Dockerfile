@@ -5,6 +5,10 @@ WORKDIR /home/client
 
 ARG PACKAGE_VERSION=0.0.8a0
 
+# Compile Python bytecode
+# https://docs.astral.sh/uv/guides/integration/docker/#compiling-bytecode
+ENV UV_COMPILE_BYTECODE=1
+
 # Since sleap requires python >=3.11, we need to create a new venv with that version
 # and install both sleap and lablink-client-service into that venv.
 RUN uv python install 3.11 \
