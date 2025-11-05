@@ -1,5 +1,5 @@
 {
-  "name": "Lablink SLEAP v1.5.1 Client Devcontainer",
+  "name": "Lablink SLEAP v1.5.2 Client Devcontainer",
   "build": {
     "context": "..",
     "dockerfile": "../Dockerfile"
